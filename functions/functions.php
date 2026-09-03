@@ -17,7 +17,7 @@
             $errors[] = "Input valid email";
         }
 
-        if(strlen($password < 8))
+        if(strlen($password) < 8)
         {
             $errors[] = "Password must have at least 8 characters";
         }

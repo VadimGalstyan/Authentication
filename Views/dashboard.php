@@ -1,22 +1,8 @@
-<?php
-    session_start();
-
-    if (!isset($_SESSION["user_id"]))
-    {
-        header('Location: login.php');
-        exit;
-    }
-
-    $id = $_SESSION['user_id'];
-    $userName = $_SESSION['user_name'];
-    $email = $_SESSION['user_email'];
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <title>Dashboard</title>
-    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body class="dashboard">
 
