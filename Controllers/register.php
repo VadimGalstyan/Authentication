@@ -1,10 +1,11 @@
 <?php
     session_start();
-    require(__DIR__ . '/../config/constants.php'); 
+    require_once(__DIR__ . '/../config/constants.php'); 
 
-    require(BASE_PATH . '/config/db.php');
-    require(BASE_PATH . '/functions/functions.php');
-    require(BASE_PATH . '/Models/user.php');
+    require_once(BASE_PATH . '/config/db.php');
+    require_once(BASE_PATH . '/functions/functions.php');
+    require_once(BASE_PATH . '/Models/user.php');
+    require_once(BASE_PATH . '/Controllers/mailer.php');
 
     $errors = [];
 
@@ -21,9 +22,17 @@
                 $errors[] = "This email is already registered";
             }else{
 
-                $user->registration($_POST["name"], $_POST["email"], $_POST["password"]);
+                $name = $_POST["name"];
+                $email = $_POST["email"];
 
-                header('Location: login.php?registered=1');
+                $verificationToken = $user->registration($name, $email, $_POST["password"]);
+
+                sendVerificationEmail($email, $name, $verificationToken);
+
+
+                // header('Location: login.php?registered=1');
+                // exit;
+                header('Location: check-email.php?email=' . urlencode($email));
                 exit;
             }
 

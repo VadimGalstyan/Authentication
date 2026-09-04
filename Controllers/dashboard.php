@@ -1,6 +1,6 @@
 <?php
     session_start();
-    require(__DIR__ . '/../config/constants.php'); 
+    require_once(__DIR__ . '/../config/constants.php'); 
 
 
 
@@ -8,6 +8,17 @@
     {
         header('Location: login.php');
         exit;
+    }
+    else
+    {
+        $email = $_SESSION['user_email'];
+        if (!$_SESSION['user_verified'])
+        {
+
+            require(BASE_PATH . '/Views/verification-page.php');
+            exit;
+        }
+        
     }
 
     $id = $_SESSION['user_id'];

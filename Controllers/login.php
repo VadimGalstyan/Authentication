@@ -1,11 +1,11 @@
 <?php
     session_start();
 
-    require(__DIR__ . '/../config/constants.php'); 
+    require_once(__DIR__ . '/../config/constants.php'); 
 
-    require(BASE_PATH . '/config/db.php');
-    require(BASE_PATH . '/functions/functions.php');
-    require(BASE_PATH . '/Models/user.php');
+    require_once(BASE_PATH . '/config/db.php');
+    require_once(BASE_PATH . '/functions/functions.php');
+    require_once(BASE_PATH . '/Models/user.php');
 
 
 
@@ -31,6 +31,7 @@
                 $_SESSION['user_id'] = $userRow['id'];
                 $_SESSION['user_name'] = $userRow['name'];
                 $_SESSION['user_email'] = $userRow['email'];
+                $_SESSION['user_verified'] = ($userRow['email_verified_at'] !== NULL);
 
                 header('Location: dashboard.php');
                 exit;
