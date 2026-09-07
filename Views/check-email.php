@@ -1,3 +1,8 @@
+<?php
+    $email = $_GET['email'] ?? '';
+?>
+
+
 <!DOCTYPE html>
 <html>
 <head>

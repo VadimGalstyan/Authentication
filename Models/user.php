@@ -28,7 +28,8 @@
             $verificationToken = bin2hex(random_bytes(32));
 
             $stmt = $this->pdo->prepare(
-                "INSERT INTO users (name, email, password, verification_token) VALUES (?, ?, ?, ?)"
+                "INSERT INTO users (name, email, password, verification_token, role_id)
+                VALUES (?, ?, ?, ?, (SELECT id FROM roles WHERE name = 'user'))"
             );
             $stmt->execute([$name, $email, $hashedPassword, $verificationToken]);
 
@@ -49,6 +50,13 @@
             $stmt = $this->pdo->prepare('SELECT * FROM users WHERE verification_token = ?');
             $stmt->execute([$token]);
 
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+
+        public function findById($id) : array|false
+        {
+            $stmt = $this->pdo->prepare('SELECT * FROM users WHERE id = ?');
+            $stmt->execute([$id]);
             return $stmt->fetch(PDO::FETCH_ASSOC);
         }
 
@@ -103,25 +111,42 @@
             return $token;
         }
 
-    public function findByResetToken($token) : array|false
-    {
-        $stmt = $this->pdo->prepare(
-            "SELECT * FROM users WHERE reset_token = ? AND reset_token_expires_at > NOW()"
-        );
-        $stmt->execute([$token]);
+        public function findByResetToken($token) : array|false
+        {
+            $stmt = $this->pdo->prepare(
+                "SELECT * FROM users WHERE reset_token = ? AND reset_token_expires_at > NOW()"
+            );
+            $stmt->execute([$token]);
 
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        }
 
-    public function resetPassword($userId, $newPassword) : void
-    {
-        $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+        public function resetPassword($userId, $newPassword) : void
+        {
+            $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
 
-        $stmt = $this->pdo->prepare(
-            "UPDATE users SET password = ?, reset_token = NULL, reset_token_expires_at = NULL WHERE id = ?"
-        );
-        $stmt->execute([$hashedPassword, $userId]);
-    }
+            $stmt = $this->pdo->prepare(
+                "UPDATE users SET password = ?, reset_token = NULL, reset_token_expires_at = NULL WHERE id = ?"
+            );
+            $stmt->execute([$hashedPassword, $userId]);
+        }
+
+        public function updateRole($userId, $roleId) : void
+        {
+            $stmt = $this->pdo->prepare('UPDATE users SET role_id = ? WHERE id = ?');
+            $stmt->execute([$roleId, $userId]);
+        }
+
+        public function getAllWithRoles() : array
+        {
+            $stmt = $this->pdo->query(
+                'SELECT users.id, users.name, users.email, users.email_verified_at, users.created_at, roles.name AS role_name, roles.id AS role_id
+                FROM users
+                JOIN roles ON roles.id = users.role_id
+                ORDER BY users.id'
+            );
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
                 
     }
 

@@ -1,3 +1,7 @@
+<?php
+$email = $_GET['email'] ?? $_SESSION['user_email'] ?? '';
+?>
+
 <!DOCTYPE html>
 <html>
 <head>

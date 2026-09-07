@@ -6,8 +6,7 @@
     require_once(BASE_PATH . '/config/db.php');
     require_once(BASE_PATH . '/functions/functions.php');
     require_once(BASE_PATH . '/Models/user.php');
-
-
+    require_once(BASE_PATH . '/Models/role.php');
 
     if($_SERVER['REQUEST_METHOD'] === 'POST')
     {
@@ -32,6 +31,12 @@
                 $_SESSION['user_name'] = $userRow['name'];
                 $_SESSION['user_email'] = $userRow['email'];
                 $_SESSION['user_verified'] = ($userRow['email_verified_at'] !== NULL);
+
+                $role = new Role($pdo);
+                $userRole = $role->findById($userRow['role_id']);
+
+                $_SESSION['user_role'] = $userRole['name'];
+                $_SESSION['user_permissions'] = $role->getPermissionsForRole($userRow['role_id']);
 
                 header('Location: dashboard.php');
                 exit;
