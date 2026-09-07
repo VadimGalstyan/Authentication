@@ -25,4 +25,15 @@
         return $errors;
     }
 
+       function validatePassword(string $password) : array
+    {
+        $errors = [];
+
+        if (strlen($password) < 8) {
+            $errors[] = "Password must have at least 8 characters";
+        }
+
+        return $errors;
+    }
+
 ?>

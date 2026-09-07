@@ -41,6 +41,9 @@
             <div class="footer-link">
                 Don't have an account? <a href="register.php">Register</a>
             </div>
+            <div class="footer-link">
+                Forgot password? <a href="forgot-password.php">Reset password</a>
+            </div>
 
         </form>
     </div>

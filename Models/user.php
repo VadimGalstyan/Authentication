@@ -84,6 +84,44 @@
 
             return $user['email_verified_at'] !== NULL;
         }
+
+       public function createPasswordResetToken($email) : string|false
+        {
+            $user = $this->findByEmail($email);
+
+            if (!$user) {
+                return false;
+            }
+
+            $token = bin2hex(random_bytes(32));
+
+            $stmt = $this->pdo->prepare(
+                "UPDATE users SET reset_token = ?, reset_token_expires_at = DATE_ADD(NOW(), INTERVAL 1 HOUR) WHERE id = ?"
+            );
+            $stmt->execute([$token, $user['id']]);
+
+            return $token;
+        }
+
+    public function findByResetToken($token) : array|false
+    {
+        $stmt = $this->pdo->prepare(
+            "SELECT * FROM users WHERE reset_token = ? AND reset_token_expires_at > NOW()"
+        );
+        $stmt->execute([$token]);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function resetPassword($userId, $newPassword) : void
+    {
+        $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+
+        $stmt = $this->pdo->prepare(
+            "UPDATE users SET password = ?, reset_token = NULL, reset_token_expires_at = NULL WHERE id = ?"
+        );
+        $stmt->execute([$hashedPassword, $userId]);
+    }
                 
     }
 
