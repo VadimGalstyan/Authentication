@@ -14,7 +14,7 @@
 
     if (!$token || !$matchedUser) {
         $errors[] = "This password reset link is invalid or has expired.";
-    } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    } else if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $password = $_POST['password'] ?? '';
         $confirmPassword = $_POST['confirm_password'] ?? '';
 

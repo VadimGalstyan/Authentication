@@ -10,8 +10,7 @@
     $userName = $_SESSION['user_name'];
     $email = $_SESSION['user_email'];
 
-    if (!$_SESSION['user_verified'])
-    {
+    if (!$_SESSION['user_verified']){
         require(BASE_PATH . '/Views/verification-page.php');
         exit;
     }

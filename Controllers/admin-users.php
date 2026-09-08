@@ -6,7 +6,7 @@
     require_once(BASE_PATH . '/Models/user.php');
     require_once(BASE_PATH . '/Models/role.php');
 
-    requirePermission('view_users');
+    requirePermission('access_admin_page');
 
     $userModel = new User($pdo);
     $roleModel = new Role($pdo);

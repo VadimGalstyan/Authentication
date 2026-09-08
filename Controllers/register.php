@@ -5,20 +5,17 @@
     require_once(BASE_PATH . '/config/db.php');
     require_once(BASE_PATH . '/functions/functions.php');
     require_once(BASE_PATH . '/Models/user.php');
-    require_once(BASE_PATH . '/Controllers/mailer.php');
+    require_once(BASE_PATH . '/Models/mailer.php');
 
     $errors = [];
 
-    if($_SERVER['REQUEST_METHOD'] === 'POST')
-    {
+    if($_SERVER['REQUEST_METHOD'] === 'POST'){
         $errors = validateRegistration($_POST);
 
-        if(empty($errors))
-        {
+        if(empty($errors)){
             $user = new User($pdo);
 
-            if($user->findByEmail($_POST['email']))
-            {
+            if($user->findByEmail($_POST['email'])){
                 $errors[] = "This email is already registered";
             }else{
 
