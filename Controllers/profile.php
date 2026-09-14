@@ -13,8 +13,14 @@
     $stmt = $pdo->prepare("SELECT * FROM user_profiles WHERE user_id = ?");
 
     $stmt->execute([$_SESSION['user_id']]);
-    
+
     $profile = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $picturePath = BASE_PATH . '/uploads/profiles/'. $profile['profile_picture'];
+    $pictureUrl = '/uploads/profiles/' . ($profile['profile_picture'] ?? '');
+    $defaultUrl = '/assets/default-avatar.png';
+
+    $displayPicture = (!empty($profile['profile_picture']) && file_exists($picturePath)) ? $pictureUrl : $defaultUrl;
 
     require(BASE_PATH . '/Views/profile.php');
 ?>

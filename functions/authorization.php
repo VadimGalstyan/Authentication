@@ -1,4 +1,6 @@
 <?php
+
+    require_once(__DIR__ . '/../config/constants.php'); 
     require_once(BASE_PATH . '/Models/role.php');
 
     function requireLogin() : void

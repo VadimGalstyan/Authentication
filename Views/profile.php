@@ -13,16 +13,6 @@
     </div>
 
     <div class="page-content">
-        <?php
-            require_once(__DIR__ . '/../config/constants.php');
-
-            $picturePath = BASE_PATH . '/uploads/profiles/'. $profile['profile_picture'];
-            $pictureUrl = '/uploads/profiles/' . ($profile['profile_picture'] ?? '');
-            $defaultUrl = '/assets/default-avatar.png';
-
-            $displayPicture = (!empty($profile['profile_picture']) && file_exists($picturePath)) ? $pictureUrl : $defaultUrl;
-        ?>
-
         <h1>My Profile</h1>
         
         <img src="<?= htmlspecialchars($displayPicture) ?>"
@@ -56,7 +46,9 @@
             </div>
         </div>
 
-        <!-- <p><a href="profile_edit.php">Edit profile</a></p> check -->
+        <div class="footer-link" style="text-align:left; margin-top:1.3rem;">
+            <a href="profile-edit.php">Edit Profile</a>
+        </div>
     </div>
 
 </body>
