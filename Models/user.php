@@ -147,6 +147,16 @@
             );
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
+
+        public function getProfileData($id) : array
+        {
+            $stmt = $this->pdo->prepare(
+                'SELECT * FROM user_profiles WHERE user_id = ?'
+            );
+            $stmt ->execute([$id]);
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
                 
     }
 

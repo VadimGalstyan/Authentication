@@ -7,8 +7,15 @@
 <body class="dashboard">
 
     <div class="topbar">
+
         <div class="brand">Authentication</div>
-        <a href="logout.php">Log out</a>
+
+        <div class="nav-links">
+            <a href="profile.php">Profile</a>
+
+            <a href="logout.php">Log out</a>
+        </div>
+
     </div>
 
     <div class="page-content">

@@ -158,6 +158,11 @@ body.dashboard {
   text-decoration: underline;
 }
 
+.topbar .nav-links {
+    display: flex;
+    gap: 20px;
+}
+
 .page-content {
   max-width: 560px;
   margin: 3rem auto;

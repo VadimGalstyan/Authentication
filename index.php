@@ -1,27 +1,29 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="assets/style.css">
-
     <title>My Website</title>
-    <style>
-        form 
-        {
-            text-align: center;
-        }
-    </style>
-
 </head>
-<body>
-    <div class="card">
-        <h1>Main page</h1>
+<body class="dashboard">
 
-            <div class="footer-link">
-                Registration <a href="Controllers/register.php">Register</a>
-                <br>
-                Log in <a href="Controllers/login.php">Log in</a>
-            </div>
-
-        </form>
+    <div class="topbar">
+        <div>
+            <a href="Controllers/dashboard.php">Dashboard</a>
+            &nbsp;&nbsp;
+            <a href="Controllers/moderator.php">Moderator</a>
+        </div>
+        <div>
+            <a href="Controllers/login.php">Log in</a>
+            &nbsp;&nbsp;
+            <a href="Controllers/register.php">Register</a>
+        </div>
     </div>
 
-</body>  
+    <div class="page-content">
+        
+    </div>
+
+</body>
+</html>
