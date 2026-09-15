@@ -25,9 +25,9 @@
                     <a href="Controllers/admin-users.php">Manage Users</a>
                 <?php endif; ?>
                 &nbsp;&nbsp;
-                <a href="posts.php">Posts Feed</a>
+                <a href="../Controllers/posts.php">Posts Feed</a>
             <?php else: ?>
-                <a href="posts.php">Posts Feed</a>
+                <a href="../Controllers/posts.php">Posts Feed</a>
             <?php endif; ?>
         </div>
         <div>
