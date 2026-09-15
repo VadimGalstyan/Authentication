@@ -5,8 +5,11 @@
 
     require_once(BASE_PATH . '/config/db.php');
     require_once(BASE_PATH . '/functions/functions.php');
+    require_once(BASE_PATH . '/functions/authorization.php');
     require_once(BASE_PATH . '/Models/user.php');
     require_once(BASE_PATH . '/Models/role.php');
+
+    isLogged();
 
     if($_SERVER['REQUEST_METHOD'] === 'POST'){
         $errors = [];
@@ -20,8 +23,11 @@
             $userRow = $user->getRow($email);
 
             if(!($user->emailExists($email)) || !password_verify($password, $userRow['password'])){
+                
                 $errors[] = 'Wrong email or password';
+
             }else{
+
                 session_regenerate_id(TRUE);
 
                 $_SESSION['user_id'] = $userRow['id'];
@@ -35,7 +41,7 @@
                 $_SESSION['user_role'] = $userRole['name'];
                 $_SESSION['user_permissions'] = $role->getPermissionsForRole($userRow['role_id']);
 
-                header('Location: dashboard.php');
+                header('Location: ../index.php');
                 exit;
             }
         }

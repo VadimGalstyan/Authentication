@@ -8,7 +8,9 @@
 
     <div class="topbar">
 
-        <div class="brand">Authentication</div>
+        <div class="brand">
+            <a href="../index.php">Main</a>
+        </div>
 
         <div class="nav-links">
             <a href="profile.php">Profile</a>

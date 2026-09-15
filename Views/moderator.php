@@ -4,7 +4,15 @@
     <title>User Management</title>
     <link rel="stylesheet" href="../assets/style.css">
 </head>
-<body>
+<body class="dashboard">
+    <div class="topbar">
+
+        <div class="brand">
+            <a href="../index.php">Main</a>
+        </div>
+
+    </div>
+    
     <div class="page-content">
         <h1>Users</h1>
 

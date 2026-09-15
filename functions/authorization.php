@@ -11,6 +11,15 @@
         }
     }
 
+    function isLogged() : void
+    {
+        if (isset($_SESSION['user_id'])) 
+        {
+            header('Location: ../index.php');
+            exit;
+        }
+    }
+
     function hasRole(string $roleName) : bool
     {
         return isset($_SESSION['user_role']) && $_SESSION['user_role'] === $roleName;

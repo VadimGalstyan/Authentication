@@ -17,6 +17,7 @@ session_start();
 
         if(!empty($_FILES["profile_picture"]["name"]))
         {
+            echo("flag1");
             $allowedTypes = ["image/jpeg", "image/png", "image/webp"];
             $allowedExtensions = ["jpg", "jpeg", "png", "webp"];
 
@@ -39,7 +40,7 @@ session_start();
             }else if($fileSize > 2 * 1024 * 1024) {
                 $errors[] = "Invalid file size(must be less than 2mb)";
             }else {
-                
+                echo("flag2");
                 $oldPicStmt = $pdo->prepare("SELECT profile_picture FROM user_profiles WHERE user_id = ?");
                 $oldPicStmt->execute([$userId]);
                 $oldPicture = $oldPicStmt->fetchColumn();
@@ -50,7 +51,7 @@ session_start();
             }
 
         }else if ($removePicture) {
-
+            echo("flag3");
             $oldPicStmt = $pdo->prepare("SELECT profile_picture FROM user_profiles WHERE user_id = ?");
             $oldPicStmt->execute([$userId]);
             $oldPicture = $oldPicStmt->fetchColumn();
@@ -91,8 +92,9 @@ session_start();
 
         if (empty($errors)) 
         {
-                if ($profilePictureFilename !== null) 
+                if ($profilePhotoName !== null) 
                 {
+                    echo("flag4");
 
                     $stmt = $pdo->prepare(
                         "INSERT INTO user_profiles (user_id, first_name, last_name, phone, location, date_of_birth, bio, profile_picture)
@@ -102,10 +104,10 @@ session_start();
                             date_of_birth = VALUES(date_of_birth), bio = VALUES(bio),
                             profile_picture = VALUES(profile_picture)"
                     );
-                    $stmt->execute([$userId, $first_name, $last_name, $phone, $location, $date_of_birth ?: null, $bio, $profilePictureFilename]);
+                    $stmt->execute([$userId, $first_name, $last_name, $phone, $location, $date_of_birth ?: null, $bio, $profilePhotoName]);
 
                 } else if ($clearPicture) {
-
+                    echo("flag5");
                     $stmt = $pdo->prepare(
                         "INSERT INTO user_profiles (user_id, first_name, last_name, phone, location, date_of_birth, bio, profile_picture)
                         VALUES (?, ?, ?, ?, ?, ?, ?, NULL) ON DUPLICATE KEY UPDATE
@@ -114,11 +116,11 @@ session_start();
                             date_of_birth = VALUES(date_of_birth), bio = VALUES(bio),
                             profile_picture = NULL"
                     );
-                    
+
                     $stmt->execute([$userId, $first_name, $last_name, $phone, $location, $date_of_birth ?: null, $bio]);
 
                 } else {
-
+                    echo("flag6");
                     $stmt = $pdo->prepare(
                         "INSERT INTO user_profiles (user_id, first_name, last_name, phone, location, date_of_birth, bio)
                         VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE
@@ -140,7 +142,6 @@ session_start();
             exit;
         }
     }
-
 
 
     $stmt = $pdo->prepare("SELECT * FROM user_profiles WHERE user_id = ?");
