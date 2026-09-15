@@ -1,9 +1,10 @@
 <?php
     session_start();
 
-    if (!isset($_SESSION['user_id'])) {
-    header('Location: Controllers/login.php');
-    exit;
+    if (!isset($_SESSION['user_id'])) 
+    {
+        header('Location: Controllers/login.php');
+        exit;
     }
 
     require_once(__DIR__ . '/../config/constants.php');

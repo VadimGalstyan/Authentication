@@ -11,13 +11,52 @@ session_start();
 
     if($_SERVER["REQUEST_METHOD"] == "POST")
     {
+        $profilePhotoName = null;
+
+        if(!empty($_FILES["profile_picture"]["name"]))
+        {
+            $allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+            $allowedExtensions = ["jpg", "jpeg", "png", "webp"];
+
+            $tmpPath = $_FILES["profile_picture"]["tmp_name"];
+            $originalName = $_FILES["profile_picture"]["name"];
+            $uploadError = $_FILES["profile_picture"]["error"];
+            $fileSize = $_FILES["profile_picture"]["size"];
+
+            $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mimeType = finfo_file($finfo, $tmpPath);
+            // finfo_close($finfo);
+
+            if($uploadError != UPLOAD_ERR_OK)
+            {
+                $errors[] = "There was a problem uploading the file";
+            }else if(!in_array($extension,$allowedExtensions) || !in_array($mimeType, $allowedTypes)) {
+                $errors[] = "Allowed types of file is jpeg,png anf webp";
+            }else if($fileSize > 2 * 1024 * 1024) {
+                $errors[] = "Invalid file size(must be less than 2mb)";
+            }else {
+                
+                $oldPicStmt = $pdo->prepare("SELECT profile_picture FROM user_profiles WHERE user_id = ?");
+                $oldPicStmt->execute([$userId]);
+                $oldPicture = $oldPicStmt->fetchColumn();
+
+                $profilePhotoName = bin2hex(random_bytes(16)) . '.' . $extension;
+                $destination = __DIR__ . "/../uploads/profiles/" . $profilePhotoName;
+                move_uploaded_file($tmpPath, $destination);
+            }
+
+        }
+       
+
+
         $first_name = trim($_POST["first_name"]);
         $last_name = trim($_POST["last_name"]);
         $phone = trim($_POST["phone"]);
         $location = trim($_POST["location"]);
         $date_of_birth = trim($_POST["date_of_birth"]);
         $bio = trim($_POST["bio"]);
-        $profile_picture = trim($_POST["profile_picture"]);
 
         if($first_name === "")
         {
@@ -34,18 +73,49 @@ session_start();
 
         if (empty($errors)) 
         {
-            $stmt = $pdo->prepare(
-                "INSERT INTO user_profiles (user_id, first_name, last_name, phone, location, date_of_birth, bio)
-                VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE
-                    first_name = VALUES(first_name),
-                    last_name = VALUES(last_name),
-                    phone = VALUES(phone),
-                    location = VALUES(location),
-                    date_of_birth = VALUES(date_of_birth),
-                    bio = VALUES(bio)"
-            );
+             if ($profilePhotoName !== null) 
+            {
+                $stmt = $pdo->prepare(
+                    "INSERT INTO user_profiles (user_id, first_name, last_name, phone, location, date_of_birth, bio, profile_picture)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE
+                        first_name = VALUES(first_name),
+                        last_name = VALUES(last_name),
+                        phone = VALUES(phone),
+                        location = VALUES(location),
+                        date_of_birth = VALUES(date_of_birth),
+                        bio = VALUES(bio),
+                        profile_picture = VALUES(profile_picture)"
+                );
 
-            $stmt->execute([$userId, $first_name, $last_name, $phone, $location, $date_of_birth ?: null, $bio]);
+                $stmt->execute([$userId, $first_name, $last_name, $phone, $location, $date_of_birth ?: null, $bio, $profilePhotoName]);
+                
+
+            } else {
+
+                $stmt = $pdo->prepare(
+                    "INSERT INTO user_profiles (user_id, first_name, last_name, phone, location, date_of_birth, bio)
+                    VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE
+                        first_name = VALUES(first_name),
+                        last_name = VALUES(last_name),
+                        phone = VALUES(phone),
+                        location = VALUES(location),
+                        date_of_birth = VALUES(date_of_birth),
+                        bio = VALUES(bio)"
+                );
+
+                $stmt->execute([$userId, $first_name, $last_name, $phone, $location, $date_of_birth ?: null, $bio]);
+            
+            }
+
+            if (!empty($oldPicture)) 
+            {
+                $oldPath = __DIR__ . '/../uploads/profiles/' . $oldPicture;
+                
+                if (file_exists($oldPath)) 
+                {
+                    unlink($oldPath);
+                }
+            }
 
             $fullName = trim($first_name . ' ' . $last_name);
             $stmt2 = $pdo->prepare("UPDATE users SET name = ? WHERE id = ?");

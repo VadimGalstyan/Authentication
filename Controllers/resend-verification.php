@@ -11,7 +11,8 @@
         $user = new User($pdo);
         $newToken = $user->regenerateVerificationToken($email);
 
-        if ($newToken) {
+        if ($newToken) 
+        {
             $userRow = $user->findByEmail($email);
             sendVerificationEmail($email, $userRow['name'], $newToken);
         }

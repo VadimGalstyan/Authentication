@@ -23,7 +23,7 @@
             </ul>
         <?php endif; ?>
 
-        <form method="POST" action="profile-edit.php">
+        <form method="POST" action="profile-edit.php" enctype="multipart/form-data">
             <div class="field">
                 <label for="first_name">First Name</label>
                 <input type="text" id="first_name" name="first_name"
@@ -58,6 +58,11 @@
                 <label for="bio">Bio</label>
                 <input type="text" id="bio" name="bio"
                        value="<?= htmlspecialchars($_POST['bio'] ?? $profile['bio'] ?? '') ?>">
+            </div>
+
+            <div class="field">
+                <label for="profile_picture">Profile Picture</label>
+                <input type="file" id="profile_picture" name="profile_picture" accept="image/jpeg,image/png,image/webp">
             </div>
 
             <button type="submit">Save Changes</button>

@@ -16,6 +16,7 @@
             $user = new User($pdo);
 
             if($user->findByEmail($_POST['email'])){
+                
                 $errors[] = "This email is already registered";
             }else{
 
