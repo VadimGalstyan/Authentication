@@ -11,7 +11,9 @@ session_start();
 
     if($_SERVER["REQUEST_METHOD"] == "POST")
     {
+        $removePicture = isset($_POST['remove_picture']) && $_POST['remove_picture'] === '1';
         $profilePhotoName = null;
+        $clearPicture = false;
 
         if(!empty($_FILES["profile_picture"]["name"]))
         {
@@ -47,6 +49,22 @@ session_start();
                 move_uploaded_file($tmpPath, $destination);
             }
 
+        }else if ($removePicture) {
+
+            $oldPicStmt = $pdo->prepare("SELECT profile_picture FROM user_profiles WHERE user_id = ?");
+            $oldPicStmt->execute([$userId]);
+            $oldPicture = $oldPicStmt->fetchColumn();
+
+            if (!empty($oldPicture)) 
+            {
+                $oldPath = __DIR__ . '/../uploads/profiles/' . $oldPicture;
+                if (file_exists($oldPath)) 
+                {
+                    unlink($oldPath);
+                }
+            }
+
+            $clearPicture = true;
         }
        
 
@@ -73,49 +91,46 @@ session_start();
 
         if (empty($errors)) 
         {
-             if ($profilePhotoName !== null) 
-            {
-                $stmt = $pdo->prepare(
-                    "INSERT INTO user_profiles (user_id, first_name, last_name, phone, location, date_of_birth, bio, profile_picture)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE
-                        first_name = VALUES(first_name),
-                        last_name = VALUES(last_name),
-                        phone = VALUES(phone),
-                        location = VALUES(location),
-                        date_of_birth = VALUES(date_of_birth),
-                        bio = VALUES(bio),
-                        profile_picture = VALUES(profile_picture)"
-                );
-
-                $stmt->execute([$userId, $first_name, $last_name, $phone, $location, $date_of_birth ?: null, $bio, $profilePhotoName]);
-                
-
-            } else {
-
-                $stmt = $pdo->prepare(
-                    "INSERT INTO user_profiles (user_id, first_name, last_name, phone, location, date_of_birth, bio)
-                    VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE
-                        first_name = VALUES(first_name),
-                        last_name = VALUES(last_name),
-                        phone = VALUES(phone),
-                        location = VALUES(location),
-                        date_of_birth = VALUES(date_of_birth),
-                        bio = VALUES(bio)"
-                );
-
-                $stmt->execute([$userId, $first_name, $last_name, $phone, $location, $date_of_birth ?: null, $bio]);
-            
-            }
-
-            if (!empty($oldPicture)) 
-            {
-                $oldPath = __DIR__ . '/../uploads/profiles/' . $oldPicture;
-                
-                if (file_exists($oldPath)) 
+                if ($profilePictureFilename !== null) 
                 {
-                    unlink($oldPath);
+
+                    $stmt = $pdo->prepare(
+                        "INSERT INTO user_profiles (user_id, first_name, last_name, phone, location, date_of_birth, bio, profile_picture)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE
+                            first_name = VALUES(first_name), last_name = VALUES(last_name),
+                            phone = VALUES(phone), location = VALUES(location),
+                            date_of_birth = VALUES(date_of_birth), bio = VALUES(bio),
+                            profile_picture = VALUES(profile_picture)"
+                    );
+                    $stmt->execute([$userId, $first_name, $last_name, $phone, $location, $date_of_birth ?: null, $bio, $profilePictureFilename]);
+
+                } else if ($clearPicture) {
+
+                    $stmt = $pdo->prepare(
+                        "INSERT INTO user_profiles (user_id, first_name, last_name, phone, location, date_of_birth, bio, profile_picture)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, NULL) ON DUPLICATE KEY UPDATE
+                            first_name = VALUES(first_name), last_name = VALUES(last_name),
+                            phone = VALUES(phone), location = VALUES(location),
+                            date_of_birth = VALUES(date_of_birth), bio = VALUES(bio),
+                            profile_picture = NULL"
+                    );
+                    
+                    $stmt->execute([$userId, $first_name, $last_name, $phone, $location, $date_of_birth ?: null, $bio]);
+
+                } else {
+
+                    $stmt = $pdo->prepare(
+                        "INSERT INTO user_profiles (user_id, first_name, last_name, phone, location, date_of_birth, bio)
+                        VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE
+                            first_name = VALUES(first_name), last_name = VALUES(last_name),
+                            phone = VALUES(phone), location = VALUES(location),
+                            date_of_birth = VALUES(date_of_birth), bio = VALUES(bio)"
+                    );
+
+                    $stmt->execute([$userId, $first_name, $last_name, $phone, $location, $date_of_birth ?: null, $bio]);
                 }
-            }
+
+
 
             $fullName = trim($first_name . ' ' . $last_name);
             $stmt2 = $pdo->prepare("UPDATE users SET name = ? WHERE id = ?");

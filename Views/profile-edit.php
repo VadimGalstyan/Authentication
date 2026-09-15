@@ -65,6 +65,14 @@
                 <input type="file" id="profile_picture" name="profile_picture" accept="image/jpeg,image/png,image/webp">
             </div>
 
+            <?php if (!empty($profile['profile_picture'])): ?>
+                <div class="field">
+                    <label>
+                        Remove current picture <input type="checkbox" name="remove_picture" value="1">
+                    </label>
+                </div>
+            <?php endif; ?>
+
             <button type="submit">Save Changes</button>
         </form>
     </div>
