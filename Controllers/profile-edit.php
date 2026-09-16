@@ -17,7 +17,6 @@ session_start();
 
         if(!empty($_FILES["profile_picture"]["name"]))
         {
-            echo("flag1");
             $allowedTypes = ["image/jpeg", "image/png", "image/webp"];
             $allowedExtensions = ["jpg", "jpeg", "png", "webp"];
 
@@ -40,7 +39,6 @@ session_start();
             }else if($fileSize > 2 * 1024 * 1024) {
                 $errors[] = "Invalid file size(must be less than 2mb)";
             }else {
-                echo("flag2");
                 $oldPicStmt = $pdo->prepare("SELECT profile_picture FROM user_profiles WHERE user_id = ?");
                 $oldPicStmt->execute([$userId]);
                 $oldPicture = $oldPicStmt->fetchColumn();
@@ -48,10 +46,23 @@ session_start();
                 $profilePhotoName = bin2hex(random_bytes(16)) . '.' . $extension;
                 $destination = __DIR__ . "/../uploads/profiles/" . $profilePhotoName;
                 move_uploaded_file($tmpPath, $destination);
+
+                //deleting old picture
+                $oldPicStmt = $pdo->prepare("SELECT profile_picture FROM user_profiles WHERE user_id = ?");
+                $oldPicStmt->execute([$userId]);
+                $oldPicture = $oldPicStmt->fetchColumn();
+
+                if (!empty($oldPicture)) 
+                {
+                    $oldPath = __DIR__ . '/../uploads/profiles/' . $oldPicture;
+                    if (file_exists($oldPath)) 
+                    {
+                        unlink($oldPath);
+                    }
+                }
             }
 
         }else if ($removePicture) {
-            echo("flag3");
             $oldPicStmt = $pdo->prepare("SELECT profile_picture FROM user_profiles WHERE user_id = ?");
             $oldPicStmt->execute([$userId]);
             $oldPicture = $oldPicStmt->fetchColumn();
@@ -89,12 +100,15 @@ session_start();
         {
             $errors[] = 'Date of birth must be in YYYY-MM-DD format.';
         }
+        if (strlen($phone) != 12 || !str_starts_with($phone,'+374'))
+        {
+            $errors[] = 'Phone must be in +374nnnnnnnn format.';
+        }
 
         if (empty($errors)) 
         {
                 if ($profilePhotoName !== null) 
                 {
-                    echo("flag4");
 
                     $stmt = $pdo->prepare(
                         "INSERT INTO user_profiles (user_id, first_name, last_name, phone, location, date_of_birth, bio, profile_picture)
@@ -107,7 +121,6 @@ session_start();
                     $stmt->execute([$userId, $first_name, $last_name, $phone, $location, $date_of_birth ?: null, $bio, $profilePhotoName]);
 
                 } else if ($clearPicture) {
-                    echo("flag5");
                     $stmt = $pdo->prepare(
                         "INSERT INTO user_profiles (user_id, first_name, last_name, phone, location, date_of_birth, bio, profile_picture)
                         VALUES (?, ?, ?, ?, ?, ?, ?, NULL) ON DUPLICATE KEY UPDATE
@@ -120,7 +133,6 @@ session_start();
                     $stmt->execute([$userId, $first_name, $last_name, $phone, $location, $date_of_birth ?: null, $bio]);
 
                 } else {
-                    echo("flag6");
                     $stmt = $pdo->prepare(
                         "INSERT INTO user_profiles (user_id, first_name, last_name, phone, location, date_of_birth, bio)
                         VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE

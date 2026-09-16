@@ -7,8 +7,11 @@
 </head>
 <body class="dashboard">
 
-    <div class="topbar">
-        <div class="brand">My Website</div>
+     <div class="topbar">
+        <div class="brand">
+            <a href="../index.php">Main</a>
+        </div>
+
         <a href="dashboard.php">Back to Dashboard</a>
     </div>
 
