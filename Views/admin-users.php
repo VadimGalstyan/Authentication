@@ -20,7 +20,13 @@
             <?php foreach ($users as $u): ?>
                 <div class="info-row">
                     <div>
-                        <div class="value"><?= htmlspecialchars($u['name']) ?> (<?= htmlspecialchars($u['email']) ?>)</div>
+                        <div class="value">
+                            <a href="profile.php?id=<?= (int)$u['id'] ?>">
+                                <?= htmlspecialchars($u['name']) ?>
+                            </a>
+                            (<?= htmlspecialchars($u['email']) ?>)
+                        </div>
+                        
                         <div class="label">
                             ID: <?= (int)$u['id'] ?> ·
                             Role: <?= htmlspecialchars($u['role_name']) ?> ·

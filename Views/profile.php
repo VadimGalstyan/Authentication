@@ -32,7 +32,7 @@
                 <span class="value"><?= htmlspecialchars($profile['last_name'] ?? '—') ?></span>
             </div>
 
-            <?php if ($isOwnProfile): // phone/DOB stay private to the profile owner ?>
+            <?php if ($isOwnProfile): ?>
                 <div class="info-row">
                     <span class="label">Phone: </span>
                     <span class="value"><?= htmlspecialchars($profile['phone'] ?? '—') ?></span>
@@ -70,28 +70,48 @@
     <?php else: ?>
         <div class="info-panel">
             <?php foreach ($posts as $post): ?>
-                <div class="info-row" style="display:block;">
-                    <div class="value" style="font-size:1.05rem; margin-bottom:0.3rem;">
-                        <?= htmlspecialchars($post['title']) ?>
-                    </div>
-                    <div style="margin-bottom:0.5rem;">
-                        <?= nl2br(htmlspecialchars($post['content'])) ?>
-                    </div>
-                    <div class="label">
-                        <?= htmlspecialchars($post['created_at']) ?>
-                        <?= $post['updated_at'] ? ' (edited)' : '' ?>
-                    </div>
-
-                    <?php if ($isOwnProfile): ?>
-                        <div style="margin-top:0.5rem;">
-                            <a href="post-edit.php?id=<?= (int)$post['id'] ?>">Edit</a>
-                            &nbsp;&nbsp;
-                            <a href="post-delete.php?id=<?= (int)$post['id'] ?>"
-                            onclick="return confirm('Delete this post?');">Delete</a>
-                        </div>
-                    <?php endif; ?>
+            <div class="info-row" style="display:block;">
+                <div class="value" style="font-size:1.05rem; margin-bottom:0.3rem;">
+                    <?= htmlspecialchars($post['title']) ?>
                 </div>
-            <?php endforeach; ?>
+
+                <div class="label" style="margin-bottom:0.5rem;">
+                    <?= htmlspecialchars($post['category_name']) ?>
+                    &middot; <?= htmlspecialchars(ucfirst($post['status_name'])) ?>
+                    &middot; <?= htmlspecialchars($post['created_at']) ?>
+                    <?= $post['updated_at'] ? ' (edited)' : '' ?>
+                </div>
+
+                <?php if (!empty($tagsByPost[$post['id']])): ?>
+                    <div style="margin-bottom:0.5rem; font-size:0.85rem; color:var(--accent);">
+                        <?= htmlspecialchars(implode(', ', $tagsByPost[$post['id']])) ?>
+                    </div>
+                <?php endif; ?>
+
+                <div style="margin-bottom:0.5rem;">
+                    <?= nl2br(htmlspecialchars($post['content'])) ?>
+                </div>
+
+                <?php if (!empty($imagesByPost[$post['id']])): ?>
+                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.5rem;">
+                        <?php foreach ($imagesByPost[$post['id']] as $path): ?>
+                            <img src="../uploads/posts/<?= htmlspecialchars($path) ?>"
+                                alt="Post image"
+                                style="width:100px; height:100px; object-fit:cover; border-radius:6px; border:1px solid var(--border);">
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($isOwnProfile): ?>
+                    <div style="margin-top:0.5rem;">
+                        <a href="post-edit.php?id=<?= (int)$post['id'] ?>">Edit</a>
+                        &nbsp;&nbsp;
+                        <a href="post-delete.php?id=<?= (int)$post['id'] ?>"
+                        onclick="return confirm('Delete this post?');">Delete</a>
+                    </div>
+                <?php endif; ?>
+            </div>
+        <?php endforeach; ?>
         </div>
     <?php endif; ?>
 

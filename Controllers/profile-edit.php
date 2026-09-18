@@ -29,7 +29,6 @@ session_start();
 
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
             $mimeType = finfo_file($finfo, $tmpPath);
-            // finfo_close($finfo);
 
             if($uploadError != UPLOAD_ERR_OK)
             {

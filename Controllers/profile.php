@@ -28,13 +28,43 @@
 
     //post
     $postsStmt = $pdo->prepare(
-        "SELECT id, title, content, created_at, updated_at
+        "SELECT posts.id, posts.title, posts.content, posts.created_at, posts.updated_at,
+                categories.name AS category_name,
+                post_status.status AS status_name
         FROM posts
-        WHERE user_id = ?
-        ORDER BY created_at DESC"
+        JOIN categories ON categories.id = posts.category_id
+        JOIN post_status ON post_status.id = posts.status_id
+        WHERE posts.user_id = ? AND posts.deleted_at IS NULL
+        ORDER BY posts.created_at DESC"
     );
     $postsStmt->execute([$viewedUserId]);
     $posts = $postsStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $postIds = array_column($posts, 'id');
+    $imagesByPost = [];
+    $tagsByPost = [];
+
+    if (!empty($postIds)) 
+    {
+        $placeholders = implode(',', array_fill(0, count($postIds), '?'));
+
+        $imgStmt = $pdo->prepare("SELECT post_id, file_path FROM post_images WHERE post_id IN ($placeholders)");
+        $imgStmt->execute($postIds);
+        foreach ($imgStmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $imagesByPost[$row['post_id']][] = $row['file_path'];
+        }
+
+        $tagStmt = $pdo->prepare(
+            "SELECT post_tag.post_id, tags.name
+            FROM post_tag
+            JOIN tags ON tags.id = post_tag.tag_id
+            WHERE post_tag.post_id IN ($placeholders)"
+        );
+        $tagStmt->execute($postIds);
+        foreach ($tagStmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $tagsByPost[$row['post_id']][] = $row['name'];
+        }
+    }
 
     //picture
     $picturePath = BASE_PATH . '/uploads/profiles/'. $profile['profile_picture'];
