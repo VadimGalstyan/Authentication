@@ -25,6 +25,19 @@
         die('You do not have permission to delete this post.');
     }
 
+    $imgStmt = $pdo->prepare("SELECT file_path FROM post_images WHERE post_id = ?");
+    $imgStmt->execute([$postId]);
+    $imagePaths = $imgStmt->fetchAll(PDO::FETCH_COLUMN);
+
+    foreach ($imagePaths as $path)  
+    {
+        $fullPath = __DIR__ . '/../uploads/posts/' . $path;
+        if (file_exists($fullPath)) 
+        {
+            unlink($fullPath);
+        }
+    }
+
     $stmt = $pdo->prepare("DELETE FROM posts WHERE id = ? AND user_id = ?");
     $stmt->execute([$postId, $userId]);
 

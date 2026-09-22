@@ -1,12 +1,13 @@
 <?php
     session_start();
-    require_once(__DIR__ . '/../config/constants.php');
     require_once(__DIR__ . '/../config/db.php');
+    require_once(__DIR__ . '/../config/constants.php');
 
     $userId = $_SESSION['user_id'] ?? null;
     $isLoggedIn = $userId !== null;
+    $highlightId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-    $stmt = $pdo->query(
+    $stmt = $pdo->prepare(
         "SELECT posts.id, posts.title, posts.content, posts.created_at,
                 users.id AS author_id, users.name AS author_name,
                 user_profiles.profile_picture,
@@ -18,8 +19,9 @@
         JOIN categories ON categories.id = posts.category_id
         JOIN post_status ON post_status.id = posts.status_id
         WHERE posts.deleted_at IS NULL AND post_status.status = 'published'
-        ORDER BY posts.created_at DESC"
+        ORDER BY (posts.id = ?) DESC, posts.created_at DESC"
     );
+    $stmt->execute([$highlightId]);
     $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $postIds = array_column($posts, 'id');

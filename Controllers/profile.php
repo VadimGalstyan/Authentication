@@ -74,4 +74,3 @@
     $displayPicture = (!empty($profile['profile_picture']) && file_exists($picturePath)) ? $pictureUrl : $defaultUrl;
 
     require(BASE_PATH . '/Views/profile.php');
-?>

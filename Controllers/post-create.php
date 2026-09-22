@@ -106,7 +106,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!empty($tagIds)) 
             {
                 $tagStmt = $pdo->prepare("INSERT INTO post_tag (post_id, tag_id) VALUES (?, ?)");
-                foreach ($tagIds as $tagId) {
+                foreach ($tagIds as $tagId) 
+                {
                     $tagStmt->execute([$postId, (int)$tagId]);
                 }
             }
@@ -114,7 +115,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!empty($validatedFiles)) 
             {
                 $userFolder = __DIR__ . '/../uploads/posts/' . $userId;
-                if (!is_dir($userFolder)) {
+                if (!is_dir($userFolder)) 
+                {
                     mkdir($userFolder, 0755, true);
                 }
 

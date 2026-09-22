@@ -23,6 +23,9 @@
         .comment-block { margin-bottom: 0.9rem; }
         .replies-block { display: none; margin-top: 0.5rem; margin-left: 1.5rem; border-left: 2px solid var(--border); padding-left: 1rem; }
         .comment-form textarea { width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 0.9rem; background: var(--bg); color: var(--ink); }
+        .replies-block { font-size: 0.85rem; }
+        .comment-block { font-size: 0.95rem; }
+        .post-card.highlighted { border: 2px solid var(--accent); }
     </style>
 </head>
 <body class="dashboard">
@@ -40,7 +43,7 @@
             <p style="color:var(--muted);">No posts yet.</p>
         <?php else: ?>
             <?php foreach ($posts as $post): $pid = $post['id']; ?>
-                <div class="post-card">
+                <div class="post-card<?= $post['id'] == $highlightId ? ' highlighted' : '' ?>">
 
                     <div class="post-author-row">
                         <img src="../uploads/profiles/<?= htmlspecialchars($post['profile_picture'] ?: 'default.jpg') ?>" alt="Profile Picture">                        
@@ -50,7 +53,11 @@
                     </div>
 
                     <div class="post-category"><?= htmlspecialchars($post['category_name']) ?></div>
-                    <div class="post-title"><?= htmlspecialchars($post['title']) ?></div>
+                    <div class="post-title">
+                        <a href="posts.php?id=<?= (int)$pid ?>" style="color:inherit; text-decoration:none;">
+                            <?= htmlspecialchars($post['title']) ?>
+                        </a>
+                    </div>
 
                     <?php if (!empty($imagesByPost[$pid])): ?>
                         <div class="post-images">
@@ -71,7 +78,7 @@
 
                     <div class="post-actions">
                         <?php if ($isLoggedIn): ?>
-                            <form method="POST" action="Controllers/post-like.php" style="display:inline;">
+                            <form method="POST" action="post-like.php" style="display:inline;">
                                 <input type="hidden" name="post_id" value="<?= (int)$pid ?>">
                                 <input type="hidden" name="redirect" value="posts.php">
                                 <button type="submit">
