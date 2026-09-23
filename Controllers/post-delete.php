@@ -9,7 +9,7 @@
     $userId = $_SESSION['user_id'];
     $postId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-    $stmt = $pdo->prepare("SELECT user_id FROM posts WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT user_id FROM posts WHERE id = ? AND deleted_at IS NULL");
     $stmt->execute([$postId]);
     $post = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -25,20 +25,7 @@
         die('You do not have permission to delete this post.');
     }
 
-    $imgStmt = $pdo->prepare("SELECT file_path FROM post_images WHERE post_id = ?");
-    $imgStmt->execute([$postId]);
-    $imagePaths = $imgStmt->fetchAll(PDO::FETCH_COLUMN);
-
-    foreach ($imagePaths as $path)  
-    {
-        $fullPath = __DIR__ . '/../uploads/posts/' . $path;
-        if (file_exists($fullPath)) 
-        {
-            unlink($fullPath);
-        }
-    }
-
-    $stmt = $pdo->prepare("DELETE FROM posts WHERE id = ? AND user_id = ?");
+    $stmt = $pdo->prepare("UPDATE posts SET deleted_at = NOW() WHERE id = ? AND user_id = ?");
     $stmt->execute([$postId, $userId]);
 
     header('Location: profile.php');

@@ -23,6 +23,8 @@
                     <a href="Controllers/admin.php">Admin</a>
                     &nbsp;&nbsp;
                     <a href="Controllers/admin-users.php">Manage Users</a>
+                    &nbsp;&nbsp;
+                    <a href="Controllers/admin-posts-deleted.php">Deleted Posts</a>
                 <?php endif; ?>
                 &nbsp;&nbsp;
                 <a href="../Controllers/posts.php">Posts Feed</a>

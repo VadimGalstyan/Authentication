@@ -38,7 +38,8 @@
         // Images
         $imgStmt = $pdo->prepare("SELECT post_id, file_path FROM post_images WHERE post_id IN ($placeholders)");
         $imgStmt->execute($postIds);
-        foreach ($imgStmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        foreach ($imgStmt->fetchAll(PDO::FETCH_ASSOC) as $row) 
+        {
             $imagesByPost[$row['post_id']][] = $row['file_path'];
         }
 
@@ -49,7 +50,8 @@
             WHERE post_tag.post_id IN ($placeholders)"
         );
         $tagStmt->execute($postIds);
-        foreach ($tagStmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        foreach ($tagStmt->fetchAll(PDO::FETCH_ASSOC) as $row) 
+        {
             $tagsByPost[$row['post_id']][] = $row['name'];
         }
 
@@ -58,7 +60,8 @@
             "SELECT post_id, COUNT(*) AS cnt FROM post_likes WHERE post_id IN ($placeholders) GROUP BY post_id"
         );
         $likeStmt->execute($postIds);
-        foreach ($likeStmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        foreach ($likeStmt->fetchAll(PDO::FETCH_ASSOC) as $row) 
+        {
             $likeCountByPost[$row['post_id']] = $row['cnt'];
         }
 
@@ -74,16 +77,17 @@
 
         $commentStmt = $pdo->prepare(
             "SELECT comments.id, comments.post_id, comments.user_id, comments.parent_id,
-                    comments.content, comments.created_at, comments.deleted_at,
+                    comments.content, comments.created_at,
                     users.name AS author_name
             FROM comments
             JOIN users ON users.id = comments.user_id
-            WHERE comments.post_id IN ($placeholders)
+            WHERE comments.post_id IN ($placeholders) AND comments.deleted_at IS NULL
             ORDER BY comments.created_at ASC"
         );
         $commentStmt->execute($postIds);
 
-        foreach ($commentStmt->fetchAll(PDO::FETCH_ASSOC) as $comment) {
+        foreach ($commentStmt->fetchAll(PDO::FETCH_ASSOC) as $comment) 
+        {
             if ($comment['parent_id'] === null) {
                 $topLevelByPost[$comment['post_id']][] = $comment;
             } else {

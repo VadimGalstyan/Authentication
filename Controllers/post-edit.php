@@ -10,7 +10,7 @@
     $postId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
     $errors = [];
 
-    $stmt = $pdo->prepare("SELECT * FROM posts WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT * FROM posts WHERE id = ? AND deleted_at IS NULL");
     $stmt->execute([$postId]);
     $post = $stmt->fetch(PDO::FETCH_ASSOC);
 

@@ -5,7 +5,8 @@
 
     function requireLogin() : void
     {
-        if (!isset($_SESSION['user_id'])) {
+        if (!isset($_SESSION['user_id'])) 
+        {
             header('Location: login.php');
             exit;
         }
@@ -29,7 +30,8 @@
     {
         requireLogin();
  
-        if (!hasRole($roleName)) {
+        if (!hasRole($roleName)) 
+        {
             http_response_code(403);
             require(BASE_PATH . '/Views/403.php');
             exit;
@@ -46,7 +48,8 @@
     {
         requireLogin();
 
-        if (!can($permissionName)) {
+        if (!can($permissionName)) 
+        {
             http_response_code(403);
             require(BASE_PATH . '/Views/403.php');
             exit;

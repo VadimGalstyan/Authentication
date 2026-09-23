@@ -10,7 +10,7 @@
     $commentId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
     $postId = isset($_GET['post_id']) ? (int)$_GET['post_id'] : 0;
 
-    $stmt = $pdo->prepare("SELECT user_id FROM comments WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT user_id, parent_id FROM comments WHERE id = ?");
     $stmt->execute([$commentId]);
     $comment = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -26,8 +26,23 @@
         die('You do not have permission to delete this comment.');
     }
 
-    $stmt = $pdo->prepare("UPDATE comments SET deleted_at = NOW() WHERE id = ? AND user_id = ?");
-    $stmt->execute([$commentId, $userId]);
+    $pdo->beginTransaction();
 
-    header('Location: /../post-single.php?id=' . $postId);
+    try {
+
+        $pdo->prepare("UPDATE comments SET deleted_at = NOW() WHERE id = ? AND user_id = ?")
+            ->execute([$commentId, $userId]);
+
+        if ($comment['parent_id'] === null) 
+        {
+            $pdo->prepare("UPDATE comments SET deleted_at = NOW() WHERE parent_id = ? AND deleted_at IS NULL")
+                ->execute([$commentId]);
+        }
+
+        $pdo->commit();
+    } catch (Exception $e) {
+        $pdo->rollBack();
+    }
+
+    header('Location: posts.php?id=' . $postId);
     exit;

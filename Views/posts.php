@@ -93,61 +93,68 @@
                             Show comments (<?= count($topLevelByPost[$pid] ?? []) ?>)
                         </button>
                     </div>
-
+                    
                     <div class="comments-section" id="comments-<?= $pid ?>">
 
-                        <?php if ($isLoggedIn): ?>
-                            <form method="POST" action="comment-add.php" class="comment-form" style="margin-bottom:1rem;">
-                                <input type="hidden" name="post_id" value="<?= (int)$pid ?>">
-                                <input type="hidden" name="redirect" value="posts.php">
-                                <textarea name="content" rows="2" placeholder="Write a comment..."></textarea>
-                                <button type="submit" style="margin-top:0.4rem;">Post Comment</button>
-                            </form>
-                        <?php endif; ?>
+                    <?php if ($isLoggedIn): ?>
+                        <form method="POST" action="comment-add.php" class="comment-form" style="margin-bottom:1rem;">
+                            <input type="hidden" name="post_id" value="<?= (int)$pid ?>">
+                            <textarea name="content" rows="2" placeholder="Write a comment..."></textarea>
+                            <button type="submit" style="margin-top:0.4rem;">Post Comment</button>
+                        </form>
+                    <?php endif; ?>
 
-                        <?php if (empty($topLevelByPost[$pid])): ?>
-                            <p style="color:var(--muted); font-size:0.9rem;">No comments yet.</p>
-                        <?php else: ?>
-                            <?php foreach ($topLevelByPost[$pid] as $comment): $cid = $comment['id']; ?>
-                                <div class="comment-block">
-                                    <div class="post-meta">
-                                        <?= htmlspecialchars($comment['author_name']) ?>
-                                        &middot; <?= htmlspecialchars($comment['created_at']) ?>
-                                    </div>
-                                    <div><?= $comment['deleted_at'] ? '<em>[deleted]</em>' : nl2br(htmlspecialchars($comment['content'])) ?></div>
-
-                                    <?php if (!empty($repliesByComment[$cid])): ?>
-                                        <button type="button" class="toggle-link" onclick="toggleSection('replies-<?= $cid ?>')">
-                                            Show replies (<?= count($repliesByComment[$cid]) ?>)
-                                        </button>
-                                        <div class="replies-block" id="replies-<?= $cid ?>">
-                                            <?php foreach ($repliesByComment[$cid] as $reply): ?>
-                                                <div style="margin-bottom:0.6rem;">
-                                                    <div class="post-meta">
-                                                        <?= htmlspecialchars($reply['author_name']) ?>
-                                                        &middot; <?= htmlspecialchars($reply['created_at']) ?>
-                                                    </div>
-                                                    <div><?= $reply['deleted_at'] ? '<em>[deleted]</em>' : nl2br(htmlspecialchars($reply['content'])) ?></div>
-                                                </div>
-                                            <?php endforeach; ?>
-                                        </div>
-                                    <?php endif; ?>
-
-                                    <?php if ($isLoggedIn): ?>
-                                        <form method="POST" action="comment-add.php" class="comment-form" style="margin-top:0.5rem;">
-                                            <input type="hidden" name="post_id" value="<?= (int)$pid ?>">
-                                            <input type="hidden" name="parent_id" value="<?= (int)$cid ?>">
-                                            <input type="hidden" name="redirect" value="posts.php">
-                                            <textarea name="content" rows="1" placeholder="Reply..."></textarea>
-                                            <button type="submit" style="margin-top:0.3rem;">Reply</button>
-                                        </form>
-                                    <?php endif; ?>
+                    <?php if (empty($topLevelByPost[$pid])): ?>
+                        <p style="color:var(--muted); font-size:0.9rem;">No comments yet.</p>
+                    <?php else: ?>
+                        <?php foreach ($topLevelByPost[$pid] as $comment): $cid = $comment['id']; ?>
+                            <div class="comment-block">
+                                <div class="post-meta">
+                                    <?= htmlspecialchars($comment['author_name']) ?>
+                                    &middot; <?= htmlspecialchars($comment['created_at']) ?>
                                 </div>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </div>
 
+
+                                <?php if ($isLoggedIn && $comment['user_id'] == $userId): ?>
+                                    <a href="comment-delete.php?id=<?= (int)$cid ?>&post_id=<?= (int)$pid ?>"
+                                    onclick="return confirm('Delete this comment?');"
+                                    style="font-size:0.85rem;">Delete</a>
+                                <?php endif; ?>
+
+                                <?php if (!empty($repliesByComment[$cid])): ?>
+                                    <button type="button" class="toggle-link" onclick="toggleSection('replies-<?= $cid ?>')">
+                                        Show replies (<?= count($repliesByComment[$cid]) ?>)
+                                    </button>
+                                    <div class="replies-block" id="replies-<?= $cid ?>">
+                                        <?php foreach ($repliesByComment[$cid] as $reply): ?>
+                                            <div style="margin-bottom:0.6rem;">
+                                                <div class="post-meta">
+                                                    <?= htmlspecialchars($reply['author_name']) ?>
+                                                    &middot; <?= htmlspecialchars($reply['created_at']) ?>
+                                                </div>
+                                                <?php if ($isLoggedIn && $reply['user_id'] == $userId): ?>
+                                                    <a href="comment-delete.php?id=<?= (int)$reply['id'] ?>&post_id=<?= (int)$pid ?>"
+                                                    onclick="return confirm('Delete this comment?');"
+                                                    style="font-size:0.85rem;">Delete</a>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if ($isLoggedIn): ?>
+                                    <form method="POST" action="comment-add.php" class="comment-form" style="margin-top:0.5rem;">
+                                        <input type="hidden" name="post_id" value="<?= (int)$pid ?>">
+                                        <input type="hidden" name="parent_id" value="<?= (int)$cid ?>">
+                                        <textarea name="content" rows="1" placeholder="Reply..."></textarea>
+                                        <button type="submit" style="margin-top:0.3rem;">Reply</button>
+                                    </form>
+                                <?php endif; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
+            </div>
             <?php endforeach; ?>
         <?php endif; ?>
     </div>
