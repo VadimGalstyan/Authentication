@@ -4,7 +4,8 @@
     {
         private PDO $pdo;
 
-        public function __construct(PDO $pdo) {
+        public function __construct(PDO $pdo) 
+        {
             $this->pdo = $pdo;
         }
          
@@ -22,7 +23,7 @@
         }
         
 
-        public function registration($name, $email, $password)
+        public function registration($name, $email, $password) 
         {
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
             $verificationToken = bin2hex(random_bytes(32));
