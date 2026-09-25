@@ -5,6 +5,7 @@
     require_once(BASE_PATH . '/functions/authorization.php');
     require_once(BASE_PATH . '/Models/user.php');
     require_once(BASE_PATH . '/Models/role.php');
+    require_once(BASE_PATH . '/Models/activityLogger.php');
 
     requirePermission('manage_users');
 
@@ -17,18 +18,21 @@
     $targetUser = $targetUserId ? $userModel->findById($targetUserId) : false;
     $targetRole = $newRoleId ? $roleModel->findById($newRoleId) : false;
 
-    if (!$targetUser || !$targetRole) {
+    if (!$targetUser || !$targetRole) 
+    {
         http_response_code(400);
         die("Invalid user or role.");
     }
 
-    if ((int)$targetUserId === (int)$_SESSION['user_id']) {
+    if ((int)$targetUserId === (int)$_SESSION['user_id']) 
+    {
         http_response_code(403);
         die("You cannot change your own role.");
     }
 
     $userModel->updateRole($targetUserId, $newRoleId);
+    ActivityLogger::roleChanged($_SESSION["user_id"], $targetUserId);
+    
 
     header('Location: admin-users.php');
     exit;
-?>

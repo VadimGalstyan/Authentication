@@ -7,19 +7,32 @@
     $errors = [];
     $submitted = false;
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') 
+    {
         $email = $_POST['email'] ?? '';
         $submitted = true;
 
-        if (empty($email)) {
+        if (empty($email)) 
+        {
+
             $errors[] = "Please enter your email address.";
+
         } else {
+
             $user = new User($pdo);
             $token = $user->createPasswordResetToken($email);
 
-            if ($token) {
+            if ($token) 
+            {
                 $userRow = $user->findByEmail($email);
                 sendPasswordResetEmail($email, $userRow['name'], $token);
+
+                $stmt = $pdo->prepare('SELECT id FROM users WHERE email = ?');
+                $stmt->execute(["$email"]);
+
+                $userId = $stmt->fetchColumn();
+
+                ActivityLogger::passwordReset($userId);
             }
         }
     }

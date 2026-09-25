@@ -10,6 +10,7 @@
     {
         $restoreId = (int)$_POST['restore_id'];
         $pdo->prepare("UPDATE posts SET deleted_at = NULL WHERE id = ?")->execute([$restoreId]);
+        ActivityLogger::postRestoredByAdmin($_SESSION["user_id"],$restoreId);
         header('Location: admin-posts-deleted.php');
         exit;
     }
@@ -33,7 +34,8 @@
     $imagesByPost = [];
     $tagsByPost = [];
 
-    if (!empty($postIds)) {
+    if (!empty($postIds)) 
+    {
         $placeholders = implode(',', array_fill(0, count($postIds), '?'));
 
         $imgStmt = $pdo->prepare("SELECT post_id, file_path FROM post_images WHERE post_id IN ($placeholders)");
@@ -50,7 +52,7 @@
         );
 
         $tagStmt->execute($postIds);
-        
+
         foreach ($tagStmt->fetchAll(PDO::FETCH_ASSOC) as $row) 
         {
             $tagsByPost[$row['post_id']][] = $row['name'];

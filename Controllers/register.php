@@ -9,24 +9,37 @@
 
     $errors = [];
 
-    if($_SERVER['REQUEST_METHOD'] === 'POST'){
+    if($_SERVER['REQUEST_METHOD'] === 'POST')
+    {
         $errors = validateRegistration($_POST);
 
-        if(empty($errors)){
+        if(empty($errors))
+        {
             $user = new User($pdo);
 
-            if($user->findByEmail($_POST['email'])){
-                
+            if($user->findByEmail($_POST['email']))
+            {
+        
                 $errors[] = "This email is already registered";
+
             }else{
 
                 $name = $_POST["name"];
                 $email = $_POST["email"];
 
+                
+
                 $verificationToken = $user->registration($name, $email, $_POST["password"]);
 
-                sendVerificationEmail($email, $name, $verificationToken);
+                $stmt = $pdo->prepare('SELECT id FROM users WHERE email = ?');
+                $stmt->execute(["$email"]);
 
+                $userId = $stmt->fetchColumn();
+                ActivityLogger::registration($userId,$email);
+
+                sendVerificationEmail($email, $name, $verificationToken);
+            
+                ActivityLogger::emailVerificationResend($userId,$email);
 
                 // header('Location: login.php?registered=1');
                 // exit;

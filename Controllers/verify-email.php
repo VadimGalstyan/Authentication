@@ -8,7 +8,8 @@
     $token = $_GET['token'] ?? null;
     $result = null;
 
-    if (!$token) {
+    if (!$token) 
+    {
 
         $result = 'missing_token';
 
@@ -16,7 +17,8 @@
 
         $matchedUser = $user->findByToken($token);
 
-        if (!$matchedUser) {
+        if (!$matchedUser) 
+        {
 
             $result = 'invalid_token';
 
@@ -29,4 +31,3 @@
     }
 
     require(BASE_PATH . '/Views/verify-email.php');
-?>

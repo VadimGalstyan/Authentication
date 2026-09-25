@@ -14,7 +14,9 @@
 
     $postStmt = $pdo->prepare("SELECT id FROM posts WHERE id = ? AND deleted_at IS NULL");
     $postStmt->execute([$postId]);
-    if (!$postStmt->fetch()) {
+
+    if (!$postStmt->fetch()) 
+    {
         http_response_code(404);
         die('Post not found.');
     }
@@ -51,6 +53,10 @@
         "INSERT INTO comments (post_id, user_id, parent_id, content) VALUES (?, ?, ?, ?)"
     );
     $stmt->execute([$postId, $userId, $parentId, $content]);
+
+    $newCommentId = (int)$pdo->lastInsertId();
+
+    ActivityLogger::addComment($userId,$newCommentId);
 
     header('Location: /../Controllers/posts.php?id=' . $postId);
     exit;

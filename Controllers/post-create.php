@@ -131,6 +131,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $pdo->commit();
 
+            ActivityLogger::postCreated($userId, $postId);
+
             header('Location: profile.php');
             exit;
 

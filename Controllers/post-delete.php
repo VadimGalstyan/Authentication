@@ -28,5 +28,7 @@
     $stmt = $pdo->prepare("UPDATE posts SET deleted_at = NOW() WHERE id = ? AND user_id = ?");
     $stmt->execute([$postId, $userId]);
 
+    ActivityLogger::postDeleted($userId, $postId);
+
     header('Location: profile.php');
     exit;

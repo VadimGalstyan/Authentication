@@ -12,21 +12,27 @@
 
     $matchedUser = $token ? $user->findByResetToken($token) : false;
 
-    if (!$token || !$matchedUser) {
+    if (!$token || !$matchedUser) 
+    {
         $errors[] = "This password reset link is invalid or has expired.";
+
     } else if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
         $password = $_POST['password'] ?? '';
         $confirmPassword = $_POST['confirm_password'] ?? '';
 
-        if ($password !== $confirmPassword) {
+        if ($password !== $confirmPassword) 
+        {
             $errors[] = "Passwords do not match.";
         }
 
         $passwordErrors = validatePassword($password); 
         $errors = array_merge($errors, $passwordErrors);
 
-        if (empty($errors)) {
+        if (empty($errors)) 
+        {
             $user->resetPassword($matchedUser['id'], $password);
+            
             header('Location: login.php?reset=1');
             exit;
         }

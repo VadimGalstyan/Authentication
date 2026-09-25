@@ -8,21 +8,28 @@
     require_once(BASE_PATH . '/functions/authorization.php');
     require_once(BASE_PATH . '/Models/user.php');
     require_once(BASE_PATH . '/Models/role.php');
+    require_once(BASE_PATH . '/Models/activityLogger.php');
+    
 
     isLogged();
 
-    if($_SERVER['REQUEST_METHOD'] === 'POST'){
+    if($_SERVER['REQUEST_METHOD'] === 'POST')
+    {
         $errors = [];
         $email = trim($_POST['email']);
         $password = trim($_POST['password']);
 
-        if(empty($email) || empty($password)){
+        if(empty($email) || empty($password))
+        {
             $errors[] = 'Email and password are required';
+
         }else{
+
             $user = new User($pdo);
             $userRow = $user->getRow($email);
 
-            if(!($user->emailExists($email)) || !password_verify($password, $userRow['password'])){
+            if(!($user->emailExists($email)) || !password_verify($password, $userRow['password']))
+            {
                 
                 $errors[] = 'Wrong email or password';
 
@@ -40,6 +47,8 @@
 
                 $_SESSION['user_role'] = $userRole['name'];
                 $_SESSION['user_permissions'] = $role->getPermissionsForRole($userRow['role_id']);
+
+                ActivityLogger::Login($userRow['id']);
 
                 header('Location: ../index.php');
                 exit;

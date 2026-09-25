@@ -170,6 +170,9 @@
                 }
 
                 $pdo->commit();
+                
+                ActivityLogger::postUpdated($userId, $postId);
+
                 header('Location: profile.php');
                 exit;
 

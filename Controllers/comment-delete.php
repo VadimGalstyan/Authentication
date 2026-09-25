@@ -33,10 +33,28 @@
         $pdo->prepare("UPDATE comments SET deleted_at = NOW() WHERE id = ? AND user_id = ?")
             ->execute([$commentId, $userId]);
 
+        ActivityLogger::deleteComment($userId,$commentId);
+
         if ($comment['parent_id'] === null) 
         {
             $pdo->prepare("UPDATE comments SET deleted_at = NOW() WHERE parent_id = ? AND deleted_at IS NULL")
                 ->execute([$commentId]);
+        }
+
+        $stmtSelect = $pdo->prepare("
+                SELECT id FROM comments WHERE parent_id = ?
+            ");
+
+        $stmtSelect->execute([$commentId]);
+        $replyIds = $stmtSelect->fetchAll(PDO::FETCH_COLUMN);
+
+        if (!empty($replyIds)) 
+        {
+
+            foreach ($replyIds as $replyId) 
+            {
+                ActivityLogger::deleteComment($userId,$replyId);
+            }
         }
 
         $pdo->commit();
