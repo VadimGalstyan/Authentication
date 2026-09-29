@@ -137,6 +137,17 @@
                     </div>
 
                     <div class="post-actions">
+                        <?php if ($isLoggedIn && $post['author_id'] != $userId): ?>
+                            <button type="button" class="toggle-link" 
+                            onclick="toggleSection('report-post-<?= $pid ?>')">Report</button>
+                        <?php endif; ?>
+
+                        <?php if ($isLoggedIn && ($post['author_id'] == $userId || $canModeratePosts)): ?>
+                            <a href="post-delete.php?id=<?= (int)$pid ?>"
+                            onclick="return confirm('Delete this post?');"
+                            style="font-size:0.9rem;">Delete</a>
+                        <?php endif; ?>
+
                         <?php if ($isLoggedIn): ?>
                             <form method="POST" action="post-like.php" style="display:inline;">
                                 <input type="hidden" name="post_id" value="<?= (int)$pid ?>">
@@ -153,6 +164,15 @@
                             Show comments (<?= (int)$post['comment_count'] ?>)
                         </button>
                     </div>
+
+                    <?php if ($isLoggedIn && $post['author_id'] != $userId): ?>
+                        <form method="POST" action="report.php" id="report-post-<?= $pid ?>" style="display:none; margin-top:0.5rem;">
+                            <input type="hidden" name="target_type" value="post">
+                            <input type="hidden" name="target_id" value="<?= (int)$pid ?>">
+                            <input type="text" name="reason" placeholder="Why are you reporting this post?" maxlength="255" required>
+                            <button type="submit">Send report</button>
+                        </form>
+                    <?php endif; ?>
 
                     <div class="comments-section" id="comments-<?= $pid ?>">
 
@@ -176,10 +196,20 @@
 
                                     <div><?= nl2br(htmlspecialchars($comment['content'])) ?></div>
 
-                                    <?php if ($isLoggedIn && $comment['user_id'] == $userId): ?>
+                                    <?php if ($isLoggedIn && ($comment['user_id'] == $userId || $canModerateComments)): ?>
                                         <a href="comment-delete.php?id=<?= (int)$cid ?>&post_id=<?= (int)$pid ?>"
                                            onclick="return confirm('Delete this comment?');"
                                            style="font-size:0.85rem;">Delete</a>
+                                    <?php endif; ?>
+
+                                    <?php if ($isLoggedIn && $comment['user_id'] != $userId): ?>
+                                        <button type="button" class="toggle-link" onclick="toggleSection('report-comment-<?= (int)$cid ?>')">Report</button>
+                                        <form method="POST" action="report.php" id="report-comment-<?= (int)$cid ?>" style="display:none; margin-top:0.3rem;">
+                                            <input type="hidden" name="target_type" value="comment">
+                                            <input type="hidden" name="target_id" value="<?= (int)$cid ?>">
+                                            <input type="text" name="reason" placeholder="Reason..." maxlength="255" required>
+                                            <button type="submit">Send</button>
+                                        </form>
                                     <?php endif; ?>
 
                                     <?php if (!empty($repliesByComment[$cid])): ?>
@@ -195,10 +225,20 @@
                                                     </div>
                                                     <div><?= nl2br(htmlspecialchars($reply['content'])) ?></div>
 
-                                                    <?php if ($isLoggedIn && $reply['user_id'] == $userId): ?>
+                                                    <?php if ($isLoggedIn && ($reply['user_id'] == $userId || $canModerateComments)): ?>                                                        
                                                         <a href="comment-delete.php?id=<?= (int)$reply['id'] ?>&post_id=<?= (int)$pid ?>"
                                                            onclick="return confirm('Delete this comment?');"
                                                            style="font-size:0.85rem;">Delete</a>
+                                                    <?php endif; ?>
+
+                                                    <?php if ($isLoggedIn && $reply['user_id'] != $userId): ?>
+                                                        <button type="button" class="toggle-link" onclick="toggleSection('report-comment-<?= (int)$cid ?>')">Report</button>
+                                                        <form method="POST" action="report.php" id="report-comment-<?= (int)$cid ?>" style="display:none; margin-top:0.3rem;">
+                                                            <input type="hidden" name="target_type" value="comment">
+                                                            <input type="hidden" name="target_id" value="<?= (int)$cid ?>">
+                                                            <input type="text" name="reason" placeholder="Reason..." maxlength="255" required>
+                                                            <button type="submit">Send</button>
+                                                        </form>
                                                     <?php endif; ?>
                                                 </div>
                                             <?php endforeach; ?>

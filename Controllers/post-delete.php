@@ -19,16 +19,24 @@
         die('Post not found.');
     }
 
-    if ((int)$post['user_id'] !== $userId) 
+    $isOwner = ((int)$post['user_id'] === $userId);
+
+    if (!$isOwner && !can('moderate_posts')) 
     {
         http_response_code(403);
         die('You do not have permission to delete this post.');
     }
 
-    $stmt = $pdo->prepare("UPDATE posts SET deleted_at = NOW() WHERE id = ? AND user_id = ?");
-    $stmt->execute([$postId, $userId]);
+    $pdo->prepare("UPDATE posts SET deleted_at = NOW() WHERE id = ?")->execute([$postId]);
+    $pdo->prepare("UPDATE comments SET deleted_at = NOW() WHERE post_id = ?")->execute([$postId]);
 
-    ActivityLogger::postDeleted($userId, $postId);
+    if ($isOwner) 
+    {
+        ActivityLogger::postDeleted($userId, $postId);
+        header('Location: profile.php');
 
-    header('Location: profile.php');
+    } else {
+        ActivityLogger::postDeletedByModerator($userId, $postId);
+        header('Location: posts.php');
+    }
     exit;

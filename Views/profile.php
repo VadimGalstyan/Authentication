@@ -62,7 +62,7 @@
     </div>
 
     <h1 style="font-size:1.4rem; margin-top:2rem;">
-    <?= $isOwnProfile ? 'My Posts' : htmlspecialchars($profile['first_name']) . '\'s Posts' ?>
+    <?= $isOwnProfile ? 'My Posts' : htmlspecialchars($profile['first_name'] ?? "user") . '\'s Posts' ?>
     </h1>
 
     <?php if (empty($posts)): ?>

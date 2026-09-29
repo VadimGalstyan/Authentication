@@ -20,7 +20,9 @@
         die('Comment not found.');
     }
 
-    if ((int)$comment['user_id'] !== $userId) 
+    $isOwner = (int)$comment['user_id'] !== $userId;
+
+    if (!$isOwner && !can("moderate_posts")) 
     {
         http_response_code(403);
         die('You do not have permission to delete this comment.');
@@ -30,15 +32,28 @@
 
     try {
 
-        $pdo->prepare("UPDATE comments SET deleted_at = NOW() WHERE id = ? AND user_id = ?")
-            ->execute([$commentId, $userId]);
+        $pdo->prepare("UPDATE comments SET deleted_at = NOW() WHERE id = ?")
+            ->execute([$commentId]);
 
-        ActivityLogger::deleteComment($userId,$commentId);
 
         if ($comment['parent_id'] === null) 
         {
             $pdo->prepare("UPDATE comments SET deleted_at = NOW() WHERE parent_id = ? AND deleted_at IS NULL")
                 ->execute([$commentId]);
+        }
+
+        
+
+        $pdo->commit();
+
+        if ($isOwner) 
+        {
+            ActivityLogger::deleteComment($userId, $commentId);
+            header('Location: profile.php');
+            
+        } else {
+            ActivityLogger::commentDeletedByModerator($userId, $commentId);
+            header('Location: posts.php');
         }
 
         $stmtSelect = $pdo->prepare("
@@ -53,11 +68,18 @@
 
             foreach ($replyIds as $replyId) 
             {
-                ActivityLogger::deleteComment($userId,$replyId);
+                if ($isOwner) 
+                {
+                    ActivityLogger::deleteComment($userId, $replyId);
+                    header('Location: profile.php');
+                    
+                } else {
+                    ActivityLogger::commentDeletedByModerator($userId, $replyId);
+                    header('Location: posts.php');
+                }
             }
         }
-
-        $pdo->commit();
+        
     } catch (Exception $e) {
         $pdo->rollBack();
     }

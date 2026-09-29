@@ -28,10 +28,15 @@
             $user = new User($pdo);
             $userRow = $user->getRow($email);
 
-            if(!($user->emailExists($email)) || !password_verify($password, $userRow['password']))
+            if(!($user->emailExists($email)))
             {
-                
                 $errors[] = 'Wrong email or password';
+                ActivityLogger::failedLogin(-1,"wrong_email",$email);
+
+            }elseif(!password_verify($password, $userRow['password'])) {
+
+                $errors[] = 'Wrong email or password';
+                ActivityLogger::failedLogin($userRow["id"],"wrong_password",$email);
 
             }else{
 
@@ -58,4 +63,3 @@
     
     require(BASE_PATH . '/Views/login.php');
 
-?>

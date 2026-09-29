@@ -15,7 +15,12 @@
 
                 <?php if (hasRole('moderator') || hasRole('admin')): ?>
                     &nbsp;&nbsp;
-                    <a href="Controllers/moderator.php">Moderator</a>
+                    <a href="Controllers/moderator-users.php">Moderate Users</a>
+                <?php endif; ?>
+
+                <?php if (hasRole('moderator') || hasRole('admin')): ?>
+                    &nbsp;&nbsp;
+                    <a href="Controllers/moderator.php">Moderate Posts</a>
                 <?php endif; ?>
 
                 <?php if (hasRole('admin')): ?>
@@ -25,6 +30,8 @@
                     <a href="Controllers/admin-users.php">Manage Users</a>
                     &nbsp;&nbsp;
                     <a href="Controllers/admin-posts-deleted.php">Deleted Posts</a>
+                    &nbsp;&nbsp;
+                    <a href="Controllers/logs-page.php">Activity Log</a>
                 <?php endif; ?>
                 &nbsp;&nbsp;
                 <a href="../Controllers/posts.php">Posts Feed</a>

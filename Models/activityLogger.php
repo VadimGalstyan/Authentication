@@ -50,9 +50,9 @@
             self::log($userId, 'post_deleted', 'post', $postId);
         }
 
-        public static function commentDeletedByModerator($moderatorId, $commentId) 
+        public static function postDeletedByModerator($moderatorId, $postId) 
         {
-            self::log($moderatorId, 'comment_deleted_by_moderator', 'comment', $commentId);
+            self::log($moderatorId, 'post_deleted_by_moderator', 'post', $postId);
         }
 
         public static function roleChanged($adminId, $targetUserId) 
@@ -63,6 +63,11 @@
         public static function Login($userId) 
         {
             self::log($userId, 'login'); 
+        }
+
+        public static function failedLogin($userId, $action, $email)
+        {
+            self::log($userId, $action,$email);
         }
 
         public static function Logout($userId) 
@@ -94,6 +99,9 @@
             self::log($userId, 'delete_comment',"",$commentId);
         }
 
-        
+        public static function commentDeletedByModerator($moderatorId, $commentId) 
+        {
+            self::log($moderatorId, 'comment_deleted_by_moderator', 'comment', $commentId);
+        }
 
     }
