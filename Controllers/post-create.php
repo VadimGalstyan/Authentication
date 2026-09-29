@@ -9,6 +9,14 @@ requireLogin();
 $userId = $_SESSION['user_id'];
 $errors = [];
 
+$identifier = "user:" . $userId;
+
+if (RateLimiter::tooManyPosts($identifier)) 
+{
+    http_response_code(429);
+    die('You have reached the daily limit of 10 posts. Please try again tomorrow.');
+}
+
 $categories = $pdo->query("SELECT id, name FROM categories ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
 $allTags = $pdo->query("SELECT id, name FROM tags ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
 $statuses = $pdo->query("SELECT id, status FROM post_status ORDER BY id")->fetchAll(PDO::FETCH_ASSOC);
@@ -131,6 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $pdo->commit();
 
+            RateLimiter::recordPost($identifier);
             ActivityLogger::postCreated($userId, $postId);
 
             header('Location: profile.php');

@@ -8,6 +8,14 @@
 
     $userId = $_SESSION['user_id'];
 
+    $identifier = "user:" . $userId;
+
+    if (RateLimiter::tooManyComments($identifier)) 
+    {
+        http_response_code(429);
+        die('You are commenting too fast. Please wait a moment and try again.');
+    }
+
     $postId = isset($_POST['post_id']) ? (int)$_POST['post_id'] : 0;
     $parentId = !empty($_POST['parent_id']) ? (int)$_POST['parent_id'] : null;
     $content = trim($_POST['content'] ?? '');
@@ -56,6 +64,7 @@
 
     $newCommentId = (int)$pdo->lastInsertId();
 
+    RateLimiter::recordComment($identifier);
     ActivityLogger::addComment($userId,$newCommentId);
 
     header('Location: /../Controllers/posts.php?id=' . $postId);

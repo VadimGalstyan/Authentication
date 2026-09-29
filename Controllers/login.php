@@ -9,6 +9,7 @@
     require_once(BASE_PATH . '/Models/user.php');
     require_once(BASE_PATH . '/Models/role.php');
     require_once(BASE_PATH . '/Models/activityLogger.php');
+    require_once(BASE_PATH . '/Models/rateLimiter.php');
     
 
     isLogged();
@@ -19,7 +20,16 @@
         $email = trim($_POST['email']);
         $password = trim($_POST['password']);
 
-        if(empty($email) || empty($password))
+        $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        $emailIdentifier = 'email:' . strtolower($email);
+        $ipIdentifier = 'ip:' . $ip;
+
+        if (RateLimiter::tooManyLogins($emailIdentifier) || RateLimiter::tooManyLogins($ipIdentifier)) 
+        {
+            http_response_code(429);
+            $errors[] = 'Too many failed login attempts. Please try again in 15 minutes.';
+
+        }elseif(empty($email) || empty($password))
         {
             $errors[] = 'Email and password are required';
 
@@ -31,11 +41,15 @@
             if(!($user->emailExists($email)))
             {
                 $errors[] = 'Wrong email or password';
+                RateLimiter::recordLogin($emailIdentifier);
+                RateLimiter::recordLogin($ipIdentifier);
                 ActivityLogger::failedLogin(-1,"wrong_email",$email);
 
             }elseif(!password_verify($password, $userRow['password'])) {
 
                 $errors[] = 'Wrong email or password';
+                RateLimiter::recordLogin($emailIdentifier);
+                RateLimiter::recordLogin($ipIdentifier);
                 ActivityLogger::failedLogin($userRow["id"],"wrong_password",$email);
 
             }else{
