@@ -26,6 +26,7 @@
         <?php endif; ?>
 
         <form method="POST" action="post-edit.php?id=<?= (int)$postId ?>" enctype="multipart/form-data">
+            <?= Csrf::field() ?>
             <div class="field">
                 <label for="title">Title</label>
                 <input type="text" id="title" name="title"

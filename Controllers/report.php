@@ -13,6 +13,8 @@
         header('Location: posts.php');
         exit;
     }
+    
+    Csrf::verify();
 
     $targetType = $_POST['target_type'] ?? '';
     $targetId = isset($_POST['target_id']) ? (int)$_POST['target_id'] : 0;

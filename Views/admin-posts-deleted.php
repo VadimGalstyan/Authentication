@@ -52,6 +52,7 @@
                     <?php endif; ?>
 
                     <form method="POST" action="admin-posts-deleted.php">
+                        <?= Csrf::field() ?>
                         <input type="hidden" name="restore_id" value="<?= (int)$pid ?>">
                         <button type="submit">Restore</button>
                     </form>

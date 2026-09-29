@@ -3,8 +3,7 @@
     require_once(__DIR__ . '/../config/db.php');
     require_once(__DIR__ . '/../config/constants.php');    
     require_once(__DIR__ . '/../functions/authorization.php');
-
-
+    
     $canModeratePosts = can('moderate_posts');
     $canModerateComments = can('moderate_comments');
 

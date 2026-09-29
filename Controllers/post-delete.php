@@ -5,9 +5,10 @@
     require_once(__DIR__ . '/../functions/authorization.php');
 
     requireLogin();
+    Csrf::verify();
 
     $userId = $_SESSION['user_id'];
-    $postId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+    $postId = isset($_POST['id']) ? (int)$_POST['id'] : 0;
 
     $stmt = $pdo->prepare("SELECT user_id FROM posts WHERE id = ? AND deleted_at IS NULL");
     $stmt->execute([$postId]);

@@ -106,8 +106,11 @@
                     <div style="margin-top:0.5rem;">
                         <a href="post-edit.php?id=<?= (int)$post['id'] ?>">Edit</a>
                         &nbsp;&nbsp;
-                        <a href="post-delete.php?id=<?= (int)$post['id'] ?>"
-                        onclick="return confirm('Delete this post?');">Delete</a>
+                        <form method="POST" action="post-delete.php" onsubmit="return confirm('Delete this post?');" style="display:inline;">
+                            <?= Csrf::field() ?>
+                            <input type="hidden" name="id" value="<?= (int)$post['id'] ?>">
+                            <button type="submit" style="background:none; border:none; padding:0; color:var(--accent); text-decoration:underline; cursor:pointer;">Delete</button>
+                        </form>
                     </div>
                 <?php endif; ?>
             </div>

@@ -9,6 +9,8 @@
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') 
     {
+        Csrf::verify();
+
         $email = $_POST['email'] ?? '';
         $submitted = true;
 

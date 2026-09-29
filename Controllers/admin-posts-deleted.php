@@ -8,6 +8,8 @@
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['restore_id'])) 
     {
+        Csrf::verify();
+        
         $restoreId = (int)$_POST['restore_id'];
         $pdo->prepare("UPDATE posts SET deleted_at = NULL WHERE id = ?")->execute([$restoreId]);
         ActivityLogger::postRestoredByAdmin($_SESSION["user_id"],$restoreId);

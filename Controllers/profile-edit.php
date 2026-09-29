@@ -11,6 +11,8 @@ session_start();
 
     if($_SERVER["REQUEST_METHOD"] == "POST")
     {
+        Csrf::verify();
+
         $removePicture = isset($_POST['remove_picture']) && $_POST['remove_picture'] === '1';
         $profilePhotoName = null;
         $clearPicture = false;

@@ -8,7 +8,7 @@
 <body class="dashboard">
 
     <div class="topbar">
-        <div class="brand">My Website</div>
+        <a href="../index.php">Main</a>
         <a href="profile.php">Back to Profile</a>
     </div>
 
@@ -24,6 +24,7 @@
         <?php endif; ?>
 
         <form method="POST" action="profile-edit.php" enctype="multipart/form-data">
+            <?= Csrf::field() ?>
             <div class="field">
                 <label for="first_name">First Name</label>
                 <input type="text" id="first_name" name="first_name"

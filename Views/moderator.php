@@ -34,9 +34,12 @@
                             </div>
                             <div style="margin:0.3rem 0;"><strong>Reason:</strong> <?= htmlspecialchars($r['reason']) ?></div>
 
-                            <a href="post-delete.php?id=<?= (int)$r['target_id'] ?>"
-                            onclick="return confirm('Delete this post?');"
-                            style="font-size:0.9rem;">Hide post</a>
+                            <!-- Hide post -->
+                            <form method="POST" action="post-delete.php" onsubmit="return confirm('Delete this post?');" style="display:inline;">
+                                <?= Csrf::field() ?>
+                                <input type="hidden" name="id" value="<?= (int)$r['target_id'] ?>">
+                                <button type="submit">Hide post</button>
+                            </form>
 
                         </div>
                     <?php endforeach; ?>
@@ -61,9 +64,13 @@
                             </div>
                             <div style="margin:0.3rem 0;"><strong>Reason:</strong> <?= htmlspecialchars($r['reason']) ?></div>
 
-                             <a href="comment-delete.php?id=<?= (int)$r['target_id'] ?>"
-                            onclick="return confirm('Delete this post?');"
-                            style="font-size:0.9rem;">Hide comment(with its replies)</a>
+                             <!-- Hide comment -->
+                            <form method="POST" action="comment-delete.php" onsubmit="return confirm('Delete this comment?');" style="display:inline;">
+                                <?= Csrf::field() ?>
+                                <input type="hidden" name="id" value="<?= (int)$r['target_id'] ?>">
+                                <input type="hidden" name="post_id" value="<?= (int)$r['post_id'] ?>">
+                                <button type="submit">Hide comment (with its replies)</button>
+                            </form>
                         </div>
                     <?php endforeach; ?>
                 </div>

@@ -8,6 +8,15 @@
     require_once(BASE_PATH . '/Models/activityLogger.php');
 
     requirePermission('manage_users');
+    
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') 
+    {
+        header('Location: posts.php');
+        exit;
+    }
+    
+    Csrf::verify();
+
 
     $userModel = new User($pdo);
     $roleModel = new Role($pdo);

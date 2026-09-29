@@ -143,13 +143,16 @@
                         <?php endif; ?>
 
                         <?php if ($isLoggedIn && ($post['author_id'] == $userId || $canModeratePosts)): ?>
-                            <a href="post-delete.php?id=<?= (int)$pid ?>"
-                            onclick="return confirm('Delete this post?');"
-                            style="font-size:0.9rem;">Delete</a>
+                            <form method="POST" action="post-delete.php" onsubmit="return confirm('Delete this post?');" style="display:inline;">
+                                <?= Csrf::field() ?>
+                                <input type="hidden" name="id" value="<?= (int)$pid ?>">
+                                <button type="submit" style="background:none; border:none; padding:0; color:var(--primary); text-decoration:underline; cursor:pointer;">Delete</button>
+                            </form>
                         <?php endif; ?>
 
                         <?php if ($isLoggedIn): ?>
                             <form method="POST" action="post-like.php" style="display:inline;">
+                                <?= Csrf::field() ?>
                                 <input type="hidden" name="post_id" value="<?= (int)$pid ?>">
                                 <input type="hidden" name="redirect" value="posts.php">
                                 <button type="submit">
@@ -167,6 +170,7 @@
 
                     <?php if ($isLoggedIn && $post['author_id'] != $userId): ?>
                         <form method="POST" action="report.php" id="report-post-<?= $pid ?>" style="display:none; margin-top:0.5rem;">
+                            <?= Csrf::field() ?>
                             <input type="hidden" name="target_type" value="post">
                             <input type="hidden" name="target_id" value="<?= (int)$pid ?>">
                             <input type="text" name="reason" placeholder="Why are you reporting this post?" maxlength="255" required>
@@ -178,6 +182,7 @@
 
                         <?php if ($isLoggedIn): ?>
                             <form method="POST" action="comment-add.php" class="comment-form" style="margin-bottom:1rem;">
+                                <?= Csrf::field() ?>
                                 <input type="hidden" name="post_id" value="<?= (int)$pid ?>">
                                 <textarea name="content" rows="2" placeholder="Write a comment..."></textarea>
                                 <button type="submit" style="margin-top:0.4rem;">Post Comment</button>
@@ -197,14 +202,18 @@
                                     <div><?= nl2br(htmlspecialchars($comment['content'])) ?></div>
 
                                     <?php if ($isLoggedIn && ($comment['user_id'] == $userId || $canModerateComments)): ?>
-                                        <a href="comment-delete.php?id=<?= (int)$cid ?>&post_id=<?= (int)$pid ?>"
-                                           onclick="return confirm('Delete this comment?');"
-                                           style="font-size:0.85rem;">Delete</a>
+                                        <form method="POST" action="comment-delete.php" onsubmit="return confirm('Delete this comment?');" style="display:inline;">
+                                            <?= Csrf::field() ?>
+                                            <input type="hidden" name="id" value="<?= (int)$cid ?>">
+                                            <input type="hidden" name="post_id" value="<?= (int)$pid ?>">
+                                            <button type="submit" style="background:none; border:none; padding:0; color:var(--primary); text-decoration:underline; cursor:pointer;">Delete</button>
+                                        </form>
                                     <?php endif; ?>
 
                                     <?php if ($isLoggedIn && $comment['user_id'] != $userId): ?>
                                         <button type="button" class="toggle-link" onclick="toggleSection('report-comment-<?= (int)$cid ?>')">Report</button>
                                         <form method="POST" action="report.php" id="report-comment-<?= (int)$cid ?>" style="display:none; margin-top:0.3rem;">
+                                            <?= Csrf::field() ?>
                                             <input type="hidden" name="target_type" value="comment">
                                             <input type="hidden" name="target_id" value="<?= (int)$cid ?>">
                                             <input type="text" name="reason" placeholder="Reason..." maxlength="255" required>
@@ -225,17 +234,21 @@
                                                     </div>
                                                     <div><?= nl2br(htmlspecialchars($reply['content'])) ?></div>
 
-                                                    <?php if ($isLoggedIn && ($reply['user_id'] == $userId || $canModerateComments)): ?>                                                        
-                                                        <a href="comment-delete.php?id=<?= (int)$reply['id'] ?>&post_id=<?= (int)$pid ?>"
-                                                           onclick="return confirm('Delete this comment?');"
-                                                           style="font-size:0.85rem;">Delete</a>
+                                                    <?php if ($isLoggedIn && ($reply['user_id'] == $userId || $canModerateComments)): ?>
+                                                        <form method="POST" action="comment-delete.php" onsubmit="return confirm('Delete this comment?');" style="display:inline;">
+                                                            <?= Csrf::field() ?>
+                                                            <input type="hidden" name="id" value="<?= (int)$reply['id'] ?>">
+                                                            <input type="hidden" name="post_id" value="<?= (int)$pid ?>">
+                                                            <button type="submit" style="background:none; border:none; padding:0; color:var(--primary); text-decoration:underline; cursor:pointer;">Delete</button>
+                                                        </form>
                                                     <?php endif; ?>
 
                                                     <?php if ($isLoggedIn && $reply['user_id'] != $userId): ?>
-                                                        <button type="button" class="toggle-link" onclick="toggleSection('report-comment-<?= (int)$cid ?>')">Report</button>
-                                                        <form method="POST" action="report.php" id="report-comment-<?= (int)$cid ?>" style="display:none; margin-top:0.3rem;">
+                                                        <button type="button" class="toggle-link" onclick="toggleSection('report-comment-<?= (int)$reply['id'] ?>')">Report</button>
+                                                        <form method="POST" action="report.php" id="report-comment-<?= (int)$reply['id'] ?>" style="display:none; margin-top:0.3rem;">
+                                                            <?= Csrf::field() ?>
                                                             <input type="hidden" name="target_type" value="comment">
-                                                            <input type="hidden" name="target_id" value="<?= (int)$cid ?>">
+                                                            <input type="hidden" name="target_id" value="<?= (int)$reply['id'] ?>">
                                                             <input type="text" name="reason" placeholder="Reason..." maxlength="255" required>
                                                             <button type="submit">Send</button>
                                                         </form>
@@ -247,6 +260,7 @@
 
                                     <?php if ($isLoggedIn): ?>
                                         <form method="POST" action="comment-add.php" class="comment-form" style="margin-top:0.5rem;">
+                                            <?= Csrf::field() ?>
                                             <input type="hidden" name="post_id" value="<?= (int)$pid ?>">
                                             <input type="hidden" name="parent_id" value="<?= (int)$cid ?>">
                                             <textarea name="content" rows="1" placeholder="Reply..."></textarea>

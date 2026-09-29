@@ -37,6 +37,7 @@
 
                     <?php if (can('manage_users')): ?>
                         <form method="POST" action="update-role.php">
+                            <?= Csrf::field() ?>
                             <input type="hidden" name="user_id" value="<?= (int)$u['id'] ?>">
                             <select name="role_id">
                                 <?php foreach ($allRoles as $r): ?>

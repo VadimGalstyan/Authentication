@@ -6,9 +6,17 @@
 
     requireLogin();
 
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') 
+    {
+        header('Location: posts.php');
+        exit;
+    }
+    
+    Csrf::verify();
+
     $userId = $_SESSION['user_id'];
-    $commentId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-    $postId = isset($_GET['post_id']) ? (int)$_GET['post_id'] : 0;
+    $commentId = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+    $postId = isset($_POST['post_id']) ? (int)$_POST['post_id'] : 0;
 
     $stmt = $pdo->prepare("SELECT user_id, parent_id FROM comments WHERE id = ?");
     $stmt->execute([$commentId]);

@@ -26,10 +26,10 @@
         <?php endif; ?>
 
         <form method="POST" action="post-create.php" enctype="multipart/form-data">
+            <?= Csrf::field() ?>
             <div class="field">
                 <label for="title">Title</label>
-                <input type="text" id="title" name="title"
-                       value="<?= htmlspecialchars($_POST['title'] ?? '') ?>">
+                <input type="text" id="title" name="title"value="<?= htmlspecialchars($_POST['title'] ?? '') ?>">
             </div>
 
             <div class="field">

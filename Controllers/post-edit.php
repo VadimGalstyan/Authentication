@@ -7,7 +7,7 @@
     requireLogin();
 
     $userId = $_SESSION['user_id'];
-    $postId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+    $postId = isset($_POST['id']) ? (int)$_POST['id'] : 0;
     $errors = [];
 
     $stmt = $pdo->prepare("SELECT * FROM posts WHERE id = ? AND deleted_at IS NULL");
@@ -40,6 +40,8 @@
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') 
     {
+        Csrf::verify();
+
 
         $title = trim($_POST['title']);
         $content = trim($_POST['content']);

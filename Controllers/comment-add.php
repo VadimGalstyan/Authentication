@@ -5,6 +5,14 @@
     require_once(__DIR__ . '/../functions/authorization.php');
 
     requireLogin();
+    
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') 
+    {
+        header('Location: posts.php');
+        exit;
+    }
+    
+    Csrf::verify();
 
     $userId = $_SESSION['user_id'];
 
