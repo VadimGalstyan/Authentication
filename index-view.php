@@ -29,6 +29,10 @@
                     &nbsp;&nbsp;
                     <a href="Controllers/admin-users.php">Manage Users</a>
                     &nbsp;&nbsp;
+                    <a href="Controllers/categories-manage.php">Manage Categories</a>
+                    &nbsp;&nbsp;
+                    <a href="Controllers/tags-manage.php">Manage Tags</a>
+                    &nbsp;&nbsp;
                     <a href="Controllers/admin-posts-deleted.php">Deleted Posts</a>
                     &nbsp;&nbsp;
                     <a href="Controllers/logs-page.php">Activity Log</a>

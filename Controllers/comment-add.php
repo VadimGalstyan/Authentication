@@ -4,8 +4,14 @@
     require_once(__DIR__ . '/../config/db.php');
     require_once(__DIR__ . '/../functions/authorization.php');
 
+
     requireLogin();
-    
+
+    if (empty($_SESSION['user_verified'])) 
+    {
+        http_response_code(403);
+        die('You must verify your email before posting.');
+    }
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') 
     {
         header('Location: posts.php');

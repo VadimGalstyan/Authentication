@@ -6,6 +6,12 @@
 
     requireLogin();
 
+    if (empty($_SESSION['user_verified'])) 
+    {
+        http_response_code(403);
+        die('You must verify your email before posting.');
+    }
+
     $userId = $_SESSION['user_id'];
     $errors = [];
 

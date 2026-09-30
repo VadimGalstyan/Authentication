@@ -3,4 +3,4 @@
 
     $email = $_GET['email'] ?? '';
 
-    require(BASE_PATH . '/Views/check-email.php');
+    require_once(BASE_PATH . '/Views/check-email.php');

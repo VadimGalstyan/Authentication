@@ -210,6 +210,17 @@
                                         </form>
                                     <?php endif; ?>
 
+                                    <?php if ($isLoggedIn && $comment['user_id'] == $userId): ?>
+                                        <button type="button" class="toggle-link" onclick="toggleSection('edit-comment-<?= $cid ?>')">Edit</button>
+                                        <form method="POST" action="comment-edit.php" id="edit-comment-<?= $cid ?>" style="display:none; margin-top:0.4rem;">
+                                            <?= Csrf::field() ?>
+                                            <input type="hidden" name="id" value="<?= (int)$cid ?>">
+                                            <input type="hidden" name="post_id" value="<?= (int)$pid ?>">
+                                            <textarea name="content" rows="2"><?= htmlspecialchars($comment['content']) ?></textarea>
+                                            <button type="submit" style="margin-top:0.3rem;">Save</button>
+                                        </form>
+                                    <?php endif; ?>
+
                                     <?php if ($isLoggedIn && $comment['user_id'] != $userId): ?>
                                         <button type="button" class="toggle-link" onclick="toggleSection('report-comment-<?= (int)$cid ?>')">Report</button>
                                         <form method="POST" action="report.php" id="report-comment-<?= (int)$cid ?>" style="display:none; margin-top:0.3rem;">
@@ -240,6 +251,17 @@
                                                             <input type="hidden" name="id" value="<?= (int)$reply['id'] ?>">
                                                             <input type="hidden" name="post_id" value="<?= (int)$pid ?>">
                                                             <button type="submit" style="background:none; border:none; padding:0; color:var(--primary); text-decoration:underline; cursor:pointer;">Delete</button>
+                                                        </form>
+                                                    <?php endif; ?>
+
+                                                    <?php if ($isLoggedIn && $reply['user_id'] == $userId): ?>
+                                                        <button type="button" class="toggle-link" onclick="toggleSection('edit-comment-<?= (int)$reply['id'] ?>')">Edit</button>
+                                                        <form method="POST" action="comment-edit.php" id="edit-comment-<?= (int)$reply['id'] ?>" style="display:none; margin-top:0.4rem;">
+                                                            <?= Csrf::field() ?>
+                                                            <input type="hidden" name="id" value="<?= (int)$reply['id'] ?>">
+                                                            <input type="hidden" name="post_id" value="<?= (int)$pid ?>">
+                                                            <textarea name="content" rows="2"><?= htmlspecialchars($reply['content']) ?></textarea>
+                                                            <button type="submit" style="margin-top:0.3rem;">Save</button>
                                                         </form>
                                                     <?php endif; ?>
 
