@@ -15,6 +15,5 @@
         require(BASE_PATH . '/Views/verification-page.php');
         exit;
     }
-    
+
     require(BASE_PATH . '/Views/dashboard.php');
-?>
